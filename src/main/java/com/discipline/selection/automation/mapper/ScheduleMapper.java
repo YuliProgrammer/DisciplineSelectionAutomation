@@ -2,6 +2,7 @@ package com.discipline.selection.automation.mapper;
 
 import com.discipline.selection.automation.exceptions.InvalidDataException;
 import com.discipline.selection.automation.model.Schedule;
+import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.LessonType;
 import com.discipline.selection.automation.model.enums.WeekType;
 import lombok.experimental.UtilityClass;
@@ -88,6 +89,12 @@ public class ScheduleMapper {
                 case 9:
                     schedule.setGroupNumber(value);
                     break;
+                case 10:
+                    schedule.setFacultyType(FacultyType.of(StringMapper.parseStringToInt(value), rowIndex, fileName));
+                    break;
+                case 11:
+                    schedule.setFacultyAddress(value);
+                    break;
             }
         }
 
@@ -103,7 +110,7 @@ public class ScheduleMapper {
     /**
      * Function that map current schedule to list.
      * If the lesson type of the current schedule is lecture+practice or lecture+laboratory than
-     * there is a two separate  schedules for lecture and practice or laboratory.
+     * there is two separate  schedules for lecture and practice or laboratory.
      *
      * @param schedule - current schedule
      * @param rowIndex - index of current row

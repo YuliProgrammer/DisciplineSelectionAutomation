@@ -1,5 +1,6 @@
 package com.discipline.selection.automation.model;
 
+import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.LessonType;
 import com.discipline.selection.automation.model.enums.WeekType;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,9 @@ import java.util.List;
 
 import static com.discipline.selection.automation.util.Constants.BLANK_LINE;
 
+/**
+ * Class for reading from .xlxs
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,17 +25,19 @@ import static com.discipline.selection.automation.util.Constants.BLANK_LINE;
         "groupNumber"})
 public class Schedule {
 
-    private String disciplineCipher;
-    private List<String> groupCodes = new ArrayList<>();
-    private Integer maxNumberOfStudentsInSubGroup;
-    private Integer numberOfStudentsInSubGroup = 0;
-    private String subgroupNumber;
-    private String teacherName;
-    private WeekType typeOfWeek;
-    private String lessonNumber;
-    private String dayOfWeek;
-    private LessonType lessonType;
-    private String groupNumber;
+    private String disciplineCipher;   // should be stored in column by index 0
+    private List<String> groupCodes = new ArrayList<>(); // should be stored in column by index 1
+    private Integer maxNumberOfStudentsInSubGroup;       // should be stored in column by index 2
+    private Integer numberOfStudentsInSubGroup = 0;      // should be calculated
+    private String subgroupNumber;    // should be stored in column by index 3
+    private String teacherName;       // should be stored in column by index 4
+    private WeekType typeOfWeek;      // should be stored in column by index 5
+    private String lessonNumber;      // should be stored in column by index 6
+    private String dayOfWeek;         // should be stored in column by index 7
+    private LessonType lessonType;    // should be stored in column by index 8
+    private String groupNumber;       // should be stored in column by index 9
+    private FacultyType facultyType;  // should be stored in column by index 10
+    private String facultyAddress;    // should be stored in column by index 11
 
     public Schedule(Schedule schedule) {
         this.disciplineCipher = schedule.disciplineCipher;
@@ -44,6 +50,8 @@ public class Schedule {
         this.dayOfWeek = schedule.dayOfWeek;
         this.lessonType = schedule.lessonType;
         this.groupNumber = schedule.groupNumber;
+        this.facultyType = schedule.facultyType;
+        this.facultyAddress = schedule.facultyAddress;
     }
 
     public String scheduleForConsolidationOfDisciplines() {

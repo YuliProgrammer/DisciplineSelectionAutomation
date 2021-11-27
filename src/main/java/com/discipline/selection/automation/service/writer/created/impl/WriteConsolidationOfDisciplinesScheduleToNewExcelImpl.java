@@ -99,12 +99,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
             String disciplineCipher = studentsByDiscipline.getKey();
             if (this.schedules.containsKey(disciplineCipher)) {
                 for (Student student : studentsByDiscipline.getValue()) {
-                    if (disciplineCipher.equals("1у-1-5")) {
-                        schedules.addAll(createConsolidationOfDisciplinesSchedule(student, disciplineCipher));
-                    } else {
-                        schedules.addAll(createConsolidationOfDisciplinesSchedule(student, disciplineCipher));
-
-                    }
+                    schedules.addAll(createConsolidationOfDisciplinesSchedule(student, disciplineCipher));
                 }
             }
         }

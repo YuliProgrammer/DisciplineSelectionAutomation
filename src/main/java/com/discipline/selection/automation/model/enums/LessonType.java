@@ -31,7 +31,7 @@ public enum LessonType {
                 .findFirst()
                 .orElseThrow(() -> new InvalidDataException(
                         String.format("Некоректний тип заняття \"%s\" у файлi \"%s\" (рядок %d). Можливi форомати: %s.",
-                                value, fileName, rowIndex,
+                                value, fileName, rowIndex + 1,
                                 Arrays.stream(LESSON_TYPES).map(LessonType::getName)
                                         .collect(Collectors.joining(COMA)))));
     }
