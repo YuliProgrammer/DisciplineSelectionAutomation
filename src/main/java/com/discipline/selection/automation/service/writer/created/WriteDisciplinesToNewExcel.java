@@ -25,7 +25,9 @@ public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
 
     protected XSSFCellStyle evenCellStyle;
     protected XSSFCellStyle oddCellStyle;
+    protected XSSFCellStyle farCellStyle;
     protected XSSFCellStyle duplicatedCellStyle;
+    protected XSSFCellStyle duplicatedAndFarCellStyle;
 
     protected Map<String, List<Student>> students;
     protected Map<String, Discipline> disciplines;
@@ -39,7 +41,9 @@ public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
     protected void initStyles(XSSFWorkbook workbook) {
         evenCellStyle = CellStyleCreator.createEvenCellStyleCharacteristics(workbook);
         oddCellStyle = CellStyleCreator.createOddCellStyleCharacteristics(workbook);
-        duplicatedCellStyle = CellStyleCreator.createDuplicateCellStyleCharacteristics(workbook);
+        farCellStyle = CellStyleCreator.createFarCellStyleCharacteristics(workbook);
+        duplicatedCellStyle = CellStyleCreator.createDuplicatedCellStyleCharacteristics(workbook);
+        duplicatedAndFarCellStyle = CellStyleCreator.createDuplicatedFarCellStyleCharacteristics(workbook);
     }
 
     /**

@@ -28,7 +28,7 @@ public class ConsolidationOfDisciplinesSchedule {
     private String group;               // should be stored in column by index 4
     private Schedule schedule;          // should be stored in column by index 5
     private boolean isDuplicate;
-    private boolean isFacultiesNear;
+    private boolean isFacultiesFar;
 
     public List<String> getValuesForConsolidationOfDisciplineSchedule() {
         List<String> valuesForConsolidationOfDisciplineSchedule = new ArrayList<>();

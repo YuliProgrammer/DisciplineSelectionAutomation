@@ -59,11 +59,16 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
 
         Set<ConsolidationOfDisciplinesSchedule> schedules = generateSchedule();
         Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule = isDuplicate(schedules);
-        duplicatedSchedule.forEach(consolidation -> consolidation.setDuplicate(false)); // for good view in Excel sheet
+        Set<ConsolidationOfDisciplinesSchedule> farFacultiesSchedule = isAddressesFar(schedules);
 
         writeHeader(scheduleSheet);
         writeSchedule(scheduleSheet, schedules);
         writeDuplicatesCount(scheduleSheet, duplicatedSchedule.size());
+        writeFarLessonsCount(scheduleSheet, farFacultiesSchedule.size());
+
+        // for good view in other Excel sheets
+        duplicatedSchedule.forEach(consolidation -> consolidation.setDuplicate(false));
+        farFacultiesSchedule.forEach(consolidation -> consolidation.setFacultiesFar(false));
 
         writeHeader(duplicatedScheduleSheet);
         writeSchedule(duplicatedScheduleSheet, duplicatedSchedule);
@@ -116,7 +121,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
     private void writeSchedule(XSSFSheet sheet, Set<ConsolidationOfDisciplinesSchedule> schedules) {
         int rowIndex = 2;
         for (ConsolidationOfDisciplinesSchedule schedule : schedules) {
-            writeEntry(sheet, setScheduleForeground(rowIndex, schedule.isDuplicate()),
+            writeEntry(sheet, setScheduleForeground(rowIndex, schedule.isDuplicate(), schedule.isFacultiesFar()),
                     schedule.getValuesForConsolidationOfDisciplineSchedule(), rowIndex);
             rowIndex++;
         }
@@ -133,6 +138,21 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         Cell cell = firstRow.createCell(CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_HEADER.size() + 1);
         cell.setCellStyle(CellStyleCreator.createMainHeaderCellStyleCharacteristics(sheet.getWorkbook()));
         cell.setCellValue("Виявлена кiлькiсть дублiкатiв: " + duplicatesCount);
+    }
+
+    /**
+     * Void writes count of far faculties to the new cell.
+     *
+     * @param sheet             - current sheet
+     * @param farFacultiesCount - count of far schedules
+     */
+    private void writeFarLessonsCount(XSSFSheet sheet, int farFacultiesCount) {
+        Row firstRow = sheet.getRow(0);
+        Cell cell = firstRow.createCell(CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_HEADER.size() + 2);
+        cell.setCellStyle(CellStyleCreator.createMainHeaderCellStyleCharacteristics(sheet.getWorkbook()));
+        cell.setCellValue(
+                "Виявлена кiлькiсть дисцплін, факультети яких знаходяться далеко один від одного: " +
+                        farFacultiesCount);
     }
 
     /**
@@ -203,10 +223,11 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
 
     /**
      * Void checks all schedule's rows and mark duplicated rows as `Duplicate`.
-     * Two schedule's rows be considered duplicates when:
+     * Two schedule's rows be considered duplicates for student when:
      * 1. They have the same types of week or one of types - it is a EVERY_WEEK.
      * 2. They have the same days of week.
-     * 3. They have different discipline cipher.
+     * 3. They have the same lesson number.
+     * 4. They have different discipline cipher.
      *
      * @param schedules -  full schedule for all students and disciplines that has chosen by students from different faculties
      * @return schedule that contain only duplicated items
@@ -216,17 +237,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
 
         schedules.forEach(disciplinesSchedule -> {
             Schedule currentSchedule = disciplinesSchedule.getSchedule();
-            schedules.stream()
-                    .filter(consolidation -> consolidation.getStudentName()
-                            .equals(disciplinesSchedule.getStudentName()))
-                    .filter(consolidation ->
-                            consolidation.getSchedule().getTypeOfWeek().equals(currentSchedule.getTypeOfWeek()) ||
-                                    (consolidation.getSchedule().getTypeOfWeek() != WeekType.EVERY_WEEK &&
-                                            currentSchedule.getTypeOfWeek() == WeekType.EVERY_WEEK) ||
-                                    (consolidation.getSchedule().getTypeOfWeek() == WeekType.EVERY_WEEK &&
-                                            currentSchedule.getTypeOfWeek() != WeekType.EVERY_WEEK))
-                    .filter(consolidation -> consolidation.getSchedule().getDayOfWeek()
-                            .equals(currentSchedule.getDayOfWeek()))
+            filterSchedule(schedules, disciplinesSchedule, currentSchedule)
+                    .stream()
                     .filter(consolidation -> consolidation.getSchedule().getLessonNumber()
                             .equals(currentSchedule.getLessonNumber()))
                     .filter(consolidation -> !consolidation.getSchedule().getDisciplineCipher()
@@ -241,13 +253,84 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
     }
 
     /**
-     * @param rowIndex    - index of current row for identification this rows like odd or even.
-     * @param isDuplicate - boolean value that shows if the current row is duplicate. If true - the row`s color is red.
+     * Void checks all schedule's rows and mark rows for neighboring lessons as 'Far' when faculties has different types.
+     * Two schedule's rows be considered far for student when:
+     * 1. They have the same types of week or one of types - it is a EVERY_WEEK.
+     * 2. They have the same days of week.
+     * 3. They have the neighboring lessons number.
+     * 4. They have different faculty types.
+     *
+     * @param schedules -  full schedule for all students and disciplines that has chosen by students from different faculties
+     * @return schedule that contain only far items
+     */
+    private Set<ConsolidationOfDisciplinesSchedule> isAddressesFar(Set<ConsolidationOfDisciplinesSchedule> schedules) {
+        Set<ConsolidationOfDisciplinesSchedule> farAddressesSchedule = new LinkedHashSet<>();
+
+        schedules.forEach(disciplinesSchedule -> {
+            Schedule currentSchedule = disciplinesSchedule.getSchedule();
+            filterSchedule(schedules, disciplinesSchedule, currentSchedule)
+                    .stream()
+                    .filter(consolidation -> Math.abs(consolidation.getSchedule().getLessonNumber()
+                            - currentSchedule.getLessonNumber()) == 1)
+                    .filter(consolidation -> Math.abs(consolidation.getSchedule().getFacultyType().getType()
+                            - currentSchedule.getFacultyType().getType()) == 1)
+                    .forEach(consolidation -> {
+                        consolidation.setFacultiesFar(true);
+                        farAddressesSchedule.add(consolidation);
+                    });
+        });
+
+        return farAddressesSchedule;
+    }
+
+    /**
+     * Method filters a schedule by:
+     * 1. Student name.
+     * 2. Type of week.
+     * 3. Day of week.
+     *
+     * @param schedules           - full schedule for all students and disciplines that has chosen by students from different faculties
+     * @param disciplinesSchedule - current disciplines schedule
+     * @param currentSchedule     - current schedule
+     * @return filtered schedule
+     */
+    private Set<ConsolidationOfDisciplinesSchedule> filterSchedule(Set<ConsolidationOfDisciplinesSchedule> schedules,
+                                                                   ConsolidationOfDisciplinesSchedule disciplinesSchedule,
+                                                                   Schedule currentSchedule) {
+        return schedules.stream()
+                .filter(consolidation -> consolidation.getStudentName()
+                        .equals(disciplinesSchedule.getStudentName()))
+                .filter(consolidation ->
+                        consolidation.getSchedule().getTypeOfWeek()
+                                .equals(currentSchedule.getTypeOfWeek()) ||
+                                (consolidation.getSchedule().getTypeOfWeek() != WeekType.EVERY_WEEK &&
+                                        currentSchedule.getTypeOfWeek() == WeekType.EVERY_WEEK) ||
+                                (consolidation.getSchedule().getTypeOfWeek() == WeekType.EVERY_WEEK &&
+                                        currentSchedule.getTypeOfWeek() != WeekType.EVERY_WEEK))
+                .filter(consolidation -> consolidation.getSchedule().getDayOfWeek()
+                        .equals(currentSchedule.getDayOfWeek()))
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Method return cell style that depends on parameters.
+     *
+     * @param rowIndex     - index of current row for identification this rows like odd or even.
+     * @param isDuplicate  - boolean value that shows if the current row is duplicate.
+     * @param isFacultyFar - boolean value that shows if the current faculty is far from neighbor.
+     *                     <p>
+     *                     If isDuplicate = true - the row`s color is yellow.
+     *                     If isFacultyFar = true - the row`s color is orange.
+     *                     If both parameters = true - the foreground is red.
      * @return cell style.
      */
-    private XSSFCellStyle setScheduleForeground(int rowIndex, boolean isDuplicate) {
-        if (isDuplicate) {
+    private XSSFCellStyle setScheduleForeground(int rowIndex, boolean isDuplicate, boolean isFacultyFar) {
+        if (isDuplicate && isFacultyFar) {
+            return duplicatedAndFarCellStyle;
+        } else if (isDuplicate) {
             return duplicatedCellStyle;
+        } else if (isFacultyFar) {
+            return farCellStyle;
         }
         return setForeground(rowIndex);
     }

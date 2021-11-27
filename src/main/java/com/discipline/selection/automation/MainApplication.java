@@ -49,6 +49,6 @@ public class MainApplication {
         System.out.println("\nКiнець роботи програми.");
     }
 
-    // D:\test\2021 vxid bak 10_2021 (2) (2).xlsx
-    // D:\test\2021_Rozklad bak 2 sem (1) (2).xlsx
+    // D:\University\Cursah\New\test\2021 vxid bak 10_2021.xlsx
+    // D:\University\Cursah\New\test\2021_Rozklad bak 2sem.xlsx
 }

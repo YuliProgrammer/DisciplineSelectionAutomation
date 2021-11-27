@@ -100,7 +100,7 @@ public class ScheduleMapper {
 
         for (String lessonNumber : lessonNumbers) {
             Schedule newSchedule = new Schedule(schedule);
-            newSchedule.setLessonNumber(lessonNumber);
+            newSchedule.setLessonNumber(StringMapper.parseStringToInt(lessonNumber));
             schedules.add(newSchedule);
         }
 

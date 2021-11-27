@@ -1,7 +1,6 @@
 package com.discipline.selection.automation.util;
 
 import lombok.experimental.UtilityClass;
-
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -58,18 +57,38 @@ public class CellStyleCreator {
      *
      * @param workbook - current workbook
      * @return cell style with all basics characteristics like:
+     * 1. orange foreground color
+     * 2. thin pale blue borders
+     * 3. font "Times New Roman", 14
+     */
+    public XSSFCellStyle createDuplicatedCellStyleCharacteristics(XSSFWorkbook workbook) {
+        return createDuplicatedOrFarCellStyle(workbook, IndexedColors.ORANGE.getIndex());
+    }
+
+    /**
+     * Function that create cell style for far rows
+     *
+     * @param workbook - current workbook
+     * @return cell style with all basics characteristics like:
+     * 1. yellow foreground color
+     * 2. thin pale blue borders
+     * 3. font "Times New Roman", 14
+     */
+    public XSSFCellStyle createFarCellStyleCharacteristics(XSSFWorkbook workbook) {
+        return createDuplicatedOrFarCellStyle(workbook, IndexedColors.YELLOW.getIndex());
+    }
+
+    /**
+     * Function that create cell style for duplicated and far rows
+     *
+     * @param workbook - current workbook
+     * @return cell style with all basics characteristics like:
      * 1. red foreground color
      * 2. thin pale blue borders
      * 3. font "Times New Roman", 14
      */
-    public XSSFCellStyle createDuplicateCellStyleCharacteristics(XSSFWorkbook workbook) {
-        XSSFCellStyle foregroundStyle = workbook.createCellStyle();
-        foregroundStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        foregroundStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-        foregroundStyle.setFont(createFont(workbook));
-        foregroundStyle.setWrapText(true);
-        thinBorders(foregroundStyle);
-        return foregroundStyle;
+    public XSSFCellStyle createDuplicatedFarCellStyleCharacteristics(XSSFWorkbook workbook) {
+        return createDuplicatedOrFarCellStyle(workbook, IndexedColors.RED.getIndex());
     }
 
     /**
@@ -107,6 +126,16 @@ public class CellStyleCreator {
         foregroundStyle.setFont(createWhiteFont(workbook));
         foregroundStyle.setWrapText(true);
         withoutBorders(foregroundStyle);
+        return foregroundStyle;
+    }
+
+    private XSSFCellStyle createDuplicatedOrFarCellStyle(XSSFWorkbook workbook, short colorIndex) {
+        XSSFCellStyle foregroundStyle = workbook.createCellStyle();
+        foregroundStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        foregroundStyle.setFillForegroundColor(colorIndex);
+        foregroundStyle.setFont(createFont(workbook));
+        foregroundStyle.setWrapText(true);
+        thinBorders(foregroundStyle);
         return foregroundStyle;
     }
 

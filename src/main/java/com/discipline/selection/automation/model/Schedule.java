@@ -32,7 +32,7 @@ public class Schedule {
     private String subgroupNumber;    // should be stored in column by index 3
     private String teacherName;       // should be stored in column by index 4
     private WeekType typeOfWeek;      // should be stored in column by index 5
-    private String lessonNumber;      // should be stored in column by index 6
+    private Integer lessonNumber;      // should be stored in column by index 6
     private String dayOfWeek;         // should be stored in column by index 7
     private LessonType lessonType;    // should be stored in column by index 8
     private String groupNumber;       // should be stored in column by index 9
