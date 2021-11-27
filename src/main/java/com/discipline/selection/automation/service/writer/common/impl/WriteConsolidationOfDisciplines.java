@@ -1,0 +1,129 @@
+package com.discipline.selection.automation.service.writer.common.impl;
+
+import com.discipline.selection.automation.mapper.StudentMapper;
+import com.discipline.selection.automation.model.Discipline;
+import com.discipline.selection.automation.model.Schedule;
+import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.service.WriteToExcel;
+import com.discipline.selection.automation.service.writer.common.Writer;
+import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesScheduleToNewExcelImpl;
+import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesToNewExcelImpl;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.discipline.selection.automation.MainApplication.FILE_NAMES;
+import static com.discipline.selection.automation.model.enums.LessonType.LABORATORY;
+import static com.discipline.selection.automation.model.enums.LessonType.PRACTICE;
+import static com.discipline.selection.automation.util.Constants.OUTPUT_FILE_NAME;
+
+/**
+ * Class that calls of WriteConsolidationOfDisciplinesToNewExcelImpl and WriteConsolidationOfDisciplinesScheduleToNewExcelImpl
+ * in order to optimize saving the result in one excel file
+ *
+ * @author Yuliia_Dolnikova
+ */
+public class WriteConsolidationOfDisciplines implements Writer {
+
+    private final Map<String, List<Student>> students;
+    private final Map<String, Discipline> disciplines;
+    private final Map<String, List<Schedule>> schedule;
+    private final Set<String> disciplinesWithoutSchedule = new LinkedHashSet<>();
+
+    public WriteConsolidationOfDisciplines(Map<String, List<Student>> students,
+                                           Map<String, Discipline> disciplines,
+                                           Map<String, List<Schedule>> schedule) {
+        this.students = StudentMapper.getStudentsGroupedByDisciplineCipherForDifferentFacilities(students);
+        this.disciplines = disciplines.entrySet().stream()
+                .filter(entry -> this.students.containsKey(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        this.schedule = schedule;
+        addMaxStudentCountForPracticeAndLaboratory(schedule, disciplines);
+    }
+
+    /**
+     * Void add max students count for practices and laboratories where max number of students in sub group is null.
+     *
+     * @param schedule    - schedule for all students and disciplines
+     * @param disciplines - disciplines chosen by students from different faculties
+     */
+    private void addMaxStudentCountForPracticeAndLaboratory(Map<String, List<Schedule>> schedule,
+                                                            Map<String, Discipline> disciplines) {
+        disciplines.forEach((key, value) -> {
+            List<Schedule> scheduleByDiscipline = schedule.get(key);
+            if (scheduleByDiscipline == null) {
+                scheduleByDiscipline = new ArrayList<>();
+                disciplinesWithoutSchedule.add(key);
+            }
+            scheduleByDiscipline.stream()
+                    .filter(s -> s.getLessonType().equals(PRACTICE) || s.getLessonType().equals(LABORATORY))
+                    .filter(s -> s.getMaxNumberOfStudentsInSubGroup() == null)
+                    .forEach(s -> s.setMaxNumberOfStudentsInSubGroup(value.getNumberOfStudentsInSubGroup()));
+        });
+    }
+
+    public void writeToExcel() {
+        WriteToExcel writeConsolidationOfDisciplines =
+                new WriteConsolidationOfDisciplinesToNewExcelImpl(students, disciplines, schedule);
+        WriteToExcel writeConsolidationOfDisciplinesScheduleToNewExcel =
+                new WriteConsolidationOfDisciplinesScheduleToNewExcelImpl(students, disciplines, schedule,
+                        disciplinesWithoutSchedule);
+
+        String fileName = getFileName();
+        File file = new File(fileName);
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            writeConsolidationOfDisciplines.writeToExcel(workbook);
+            writeConsolidationOfDisciplinesScheduleToNewExcel.writeToExcel(workbook);
+            writeToWorkbook(file, workbook);
+            System.out.println(String.format("Зведення дисциплiн було записано у новий вихiдний файл \"%s\" (Лист №1).",
+                    fileName));
+            System.out.println(
+                    String.format("Розклад студентiв було записано у новий вихiдний файл \"%s\" (Лист №2).", fileName));
+            System.out.println(
+                    String.format("Дублiкати розкладу студентiв були записанi у новий вихiдний файл \"%s\" (Лист №3).",
+                            fileName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Void generate name of new output file.
+     *
+     * @return file name
+     */
+    private String getFileName() {
+        String separator = File.separator;
+        String inputFileName = FILE_NAMES.get(0);
+        int indexOfLastSlash = inputFileName.contains(separator) ? inputFileName.lastIndexOf(separator) + 1 : 0;
+
+        String outputPath = inputFileName.substring(0, indexOfLastSlash);
+
+        String outputYear = getYear();
+        return outputPath + outputYear + OUTPUT_FILE_NAME;
+    }
+
+    /**
+     * If the current date after January 1 and before September 10 - @return current year.
+     * In other cases - @return next year.
+     */
+    private String getYear() {
+        LocalDate currentDate = LocalDate.now();
+        int currentYear = currentDate.getYear();
+
+        LocalDate minCurrentDate = LocalDate.of(currentYear, 1, 1);  // January 1
+        LocalDate maxCurrentDate = LocalDate.of(currentYear, 9, 10); // September 10
+
+        return currentDate.isAfter(minCurrentDate) && currentDate.isBefore(maxCurrentDate) ?
+                String.valueOf(currentYear) : String.valueOf(currentYear + 1);
+    }
+
+}
