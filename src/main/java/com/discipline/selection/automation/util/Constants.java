@@ -29,6 +29,8 @@ public class Constants {
     public static final String CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_SHEET_NAME = "Звед студ дисципл розклад ";
     public static final String CONSOLIDATION_OF_DISCIPLINES_DUPLICATED_SCHEDULE_SHEET_NAME =
             "Звед студ дисц розклад (дубл.)";
+    public static final String CONSOLIDATION_OF_DISCIPLINES_FAR_SCHEDULE_SHEET_NAME =
+            "Звед студ дисц розклад (факультети.)";
 
     public static final String CHOSEN_DISCIPLINES_FOR_DIFFERENT_FACILITIES_SHEET_NAME =
             "Назви обраних рiзними фак дисц";

@@ -26,6 +26,7 @@ import static com.discipline.selection.automation.model.enums.LessonType.LECTURE
 import static com.discipline.selection.automation.model.enums.LessonType.PRACTICE;
 import static com.discipline.selection.automation.util.Constants.COMA;
 import static com.discipline.selection.automation.util.Constants.CONSOLIDATION_OF_DISCIPLINES_DUPLICATED_SCHEDULE_SHEET_NAME;
+import static com.discipline.selection.automation.util.Constants.CONSOLIDATION_OF_DISCIPLINES_FAR_SCHEDULE_SHEET_NAME;
 import static com.discipline.selection.automation.util.Constants.CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_HEADER;
 import static com.discipline.selection.automation.util.Constants.CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_SHEET_NAME;
 
@@ -56,6 +57,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         XSSFSheet scheduleSheet = workbook.createSheet(CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_SHEET_NAME);
         XSSFSheet duplicatedScheduleSheet =
                 workbook.createSheet(CONSOLIDATION_OF_DISCIPLINES_DUPLICATED_SCHEDULE_SHEET_NAME);
+        XSSFSheet farScheduleSheet =
+                workbook.createSheet(CONSOLIDATION_OF_DISCIPLINES_FAR_SCHEDULE_SHEET_NAME);
 
         Set<ConsolidationOfDisciplinesSchedule> schedules = generateSchedule();
         Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule = isDuplicate(schedules);
@@ -70,8 +73,13 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         duplicatedSchedule.forEach(consolidation -> consolidation.setDuplicate(false));
         farFacultiesSchedule.forEach(consolidation -> consolidation.setFacultiesFar(false));
 
+        // write duplicated schedule to separate sheet
         writeHeader(duplicatedScheduleSheet);
         writeSchedule(duplicatedScheduleSheet, duplicatedSchedule);
+
+        // write far schedule to separate sheet
+        writeHeader(farScheduleSheet);
+        writeSchedule(farScheduleSheet, farFacultiesSchedule);
 
         if (!disciplinesWithoutSchedule.isEmpty()) {
             System.out.println(String.format("\nВ файлi \"%s\" немає розкладу для дисциплiн [%s].\n",
