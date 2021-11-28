@@ -38,7 +38,7 @@ public class Constants {
     public static final Set<String> CONSOLIDATION_OF_DISCIPLINES_HEADER = new LinkedHashSet<>(Arrays.asList(
             "Назва дисциплiни + кафедра (факультет)", "Шифр",
             "К-ть годин лекцiй на тиждень", "К-ть годин практик. (сем.) на тиждень", "К-ть годин лабор. на тиждень",
-            "Н", "К-ть груп", "К-ть пiдгруп", "НПП", "Усього"));
+            "Н", "К-ть груп", "К-ть пiдгруп", "НПП", "Корпус/аудиторія, де будуть проводиться заняття", "Усього"));
 
     public static final Set<String> CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_HEADER = new LinkedHashSet<>(Arrays.asList(
             "1 буква фак. - це 1 буква коду групи", "Шифр дисциплiни", "Назва дисциплiни",

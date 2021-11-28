@@ -1,8 +1,5 @@
 package com.discipline.selection.automation.model;
 
-import static com.discipline.selection.automation.util.Constants.ONE;
-import static com.discipline.selection.automation.util.Constants.SEMICOLON;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +9,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.discipline.selection.automation.util.Constants.ONE;
+import static com.discipline.selection.automation.util.Constants.SEMICOLON;
 
 @Data
 @NoArgsConstructor
@@ -60,7 +60,7 @@ public class Discipline {
      */
     public List<String> getValuesForConsolidationOfDiscipline() {
         List<String> values = new ArrayList<>();
-        values.add(disciplineName + "(" + facilityCipher + ")");
+        values.add(disciplineName + " (" + facilityCipher + ")");
         values.add(disciplineCipher);
         values.add(lecturesHoursPerWeek);
         values.add(practicalHoursPerWeek);
@@ -83,6 +83,11 @@ public class Discipline {
         values.add(schedule.get(disciplineCipher) == null ? "" : new LinkedHashSet<>(schedule.get(disciplineCipher))
                 .stream()
                 .map(Schedule::scheduleForConsolidationOfDisciplines)
+                .collect(Collectors.joining(SEMICOLON)));
+
+        values.add(schedule.get(disciplineCipher) == null ? "" : new LinkedHashSet<>(schedule.get(disciplineCipher))
+                .stream()
+                .map(Schedule::getFacultyAddress)
                 .collect(Collectors.joining(SEMICOLON)));
 
         values.add(String.valueOf(studentsCount));
