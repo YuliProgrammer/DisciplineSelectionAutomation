@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +129,10 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
      */
     private void writeSchedule(XSSFSheet sheet, Set<ConsolidationOfDisciplinesSchedule> schedules) {
         int rowIndex = 2;
-        for (ConsolidationOfDisciplinesSchedule schedule : schedules) {
+        List<ConsolidationOfDisciplinesSchedule> sortedSchedules = schedules.stream()
+                .sorted(Comparator.comparing(ConsolidationOfDisciplinesSchedule::getStudentName))
+                .collect(Collectors.toList());
+        for (ConsolidationOfDisciplinesSchedule schedule : sortedSchedules) {
             writeEntry(sheet, setScheduleForeground(rowIndex, schedule.isDuplicate(), schedule.isFacultiesFar()),
                     schedule.getValuesForConsolidationOfDisciplineSchedule(), rowIndex);
             rowIndex++;
