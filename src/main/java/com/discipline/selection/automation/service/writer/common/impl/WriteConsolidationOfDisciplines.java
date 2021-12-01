@@ -8,6 +8,7 @@ import com.discipline.selection.automation.service.WriteToExcel;
 import com.discipline.selection.automation.service.writer.common.Writer;
 import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesScheduleToNewExcelImpl;
 import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesToNewExcelImpl;
+import com.discipline.selection.automation.service.writer.created.impl.WriteScheduleByGroupsToNewExcelImpl;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -32,17 +33,21 @@ import static com.discipline.selection.automation.util.Constants.OUTPUT_FILE_NAM
  */
 public class WriteConsolidationOfDisciplines implements Writer {
 
-    private final Map<String, List<Student>> students;
+    private final Map<String, List<Student>> studentsGroupedByDiscipline;
+    private final Map<String, List<Student>> studentsGroupedByGroup;
     private final Map<String, Discipline> disciplines;
     private final Map<String, List<Schedule>> schedule;
     private final Set<String> disciplinesWithoutSchedule = new LinkedHashSet<>();
 
-    public WriteConsolidationOfDisciplines(Map<String, List<Student>> students,
+    public WriteConsolidationOfDisciplines(Map<String, List<Student>> studentsGroupedByGroup,
+                                           Map<String, List<Student>> studentsGroupedByDiscipline,
                                            Map<String, Discipline> disciplines,
                                            Map<String, List<Schedule>> schedule) {
-        this.students = StudentMapper.getStudentsGroupedByDisciplineCipherForDifferentFacilities(students);
+        this.studentsGroupedByGroup = studentsGroupedByGroup;
+        this.studentsGroupedByDiscipline =
+                StudentMapper.getStudentsGroupedByDisciplineCipherForDifferentFacilities(studentsGroupedByDiscipline);
         this.disciplines = disciplines.entrySet().stream()
-                .filter(entry -> this.students.containsKey(entry.getKey()))
+                .filter(entry -> this.studentsGroupedByDiscipline.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         this.schedule = schedule;
         addMaxStudentCountForPracticeAndLaboratory(schedule, disciplines);
@@ -71,10 +76,12 @@ public class WriteConsolidationOfDisciplines implements Writer {
 
     public void writeToExcel() {
         WriteToExcel writeConsolidationOfDisciplines =
-                new WriteConsolidationOfDisciplinesToNewExcelImpl(students, disciplines, schedule);
+                new WriteConsolidationOfDisciplinesToNewExcelImpl(studentsGroupedByDiscipline, disciplines, schedule);
         WriteToExcel writeConsolidationOfDisciplinesScheduleToNewExcel =
-                new WriteConsolidationOfDisciplinesScheduleToNewExcelImpl(students, disciplines, schedule,
+                new WriteConsolidationOfDisciplinesScheduleToNewExcelImpl(studentsGroupedByDiscipline, disciplines, schedule,
                         disciplinesWithoutSchedule);
+        WriteToExcel writeScheduleByGroups =
+                new WriteScheduleByGroupsToNewExcelImpl(studentsGroupedByGroup, disciplines, schedule);
 
         String fileName = getFileName();
         File file = new File(fileName);
@@ -82,6 +89,8 @@ public class WriteConsolidationOfDisciplines implements Writer {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             writeConsolidationOfDisciplines.writeToExcel(workbook);
             writeConsolidationOfDisciplinesScheduleToNewExcel.writeToExcel(workbook);
+            writeScheduleByGroups.writeToExcel(workbook);
+
             writeToWorkbook(file, workbook);
             System.out.println(String.format("Зведення дисциплiн було записано у новий вихiдний файл \"%s\" (Лист №1).",
                     fileName));

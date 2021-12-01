@@ -9,16 +9,16 @@ public enum WeekType {
     EVERY_WEEK("");
 
     private final String name;
-    private static final WeekType[] WEEK_TYPES =
-            {NUMERATOR, DENOMINATOR, EVERY_WEEK};
+    private static final WeekType[] ALL_WEEK_TYPES = {NUMERATOR, DENOMINATOR, EVERY_WEEK};
+    public static final WeekType[] WEEK_TYPES = {NUMERATOR, DENOMINATOR};
 
     WeekType(String name) {
         this.name = name;
     }
 
     public static WeekType of(String value) {
-        return Stream.of(WEEK_TYPES)
-                .filter(lessonType -> lessonType.getName().equals(value))
+        return Stream.of(ALL_WEEK_TYPES)
+                .filter(weekType -> weekType.getName().equals(value))
                 .findFirst()
                 .orElse(EVERY_WEEK);
     }

@@ -16,9 +16,13 @@ import com.discipline.selection.automation.util.Dialog;
 import java.util.List;
 import java.util.Map;
 
+import static com.discipline.selection.automation.util.Constants.DISCIPLINE;
+import static com.discipline.selection.automation.util.Constants.GROUP;
+
 public class MainApplication {
 
-    private final static ReadFromExcel<String, List<Student>> readStudentsFromExcel = new ReadStudentsFromExcelImpl();
+    private final static ReadFromExcel<String, Map<String, List<Student>>> readStudentsFromExcel =
+            new ReadStudentsFromExcelImpl();
     private final static ReadFromExcel<String, Discipline> readDisciplinesFromExcel =
             new ReadDisciplinesFromExcelImpl();
     private final static ReadFromExcel<String, List<Schedule>> readScheduleFromExcel = new ReadScheduleFromExcelImpl();
@@ -35,18 +39,25 @@ public class MainApplication {
         System.out.println("\nЧитання даних з вказаних файлiв...");
 
         Map<String, List<Schedule>> schedule = readScheduleFromExcel.uploadData();
-        Map<String, List<Student>> students = readStudentsFromExcel.uploadData();
+
+        Map<String, Map<String, List<Student>>> groupedStudents = readStudentsFromExcel.uploadData();
+        Map<String, List<Student>> studentsGroupedByDiscipline = groupedStudents.get(DISCIPLINE);
+        Map<String, List<Student>> studentsGroupedByGroup = groupedStudents.get(GROUP);
+
         Map<String, Discipline> disciplines = readDisciplinesFromExcel.uploadData();
 
         System.out.println("\nПiдрахунок та запис поточної кiлькостi студентiв...");
-        Writer writeStudentsCount = new WriteStudentsCount(students, disciplines);
+        Writer writeStudentsCount = new WriteStudentsCount(studentsGroupedByDiscipline, disciplines);
         writeStudentsCount.writeToExcel();
 
         System.out.println("\nЗапис зведення дисциплiн...");
-        Writer writeConsolidationOfDisciplines = new WriteConsolidationOfDisciplines(students, disciplines, schedule);
+        Writer writeConsolidationOfDisciplines = new WriteConsolidationOfDisciplines(studentsGroupedByGroup,
+                studentsGroupedByDiscipline, disciplines, schedule);
         writeConsolidationOfDisciplines.writeToExcel();
 
         System.out.println("\nКiнець роботи програми.");
     }
-    
+
+    // D:\University\Cursah\New\test\2021 vxid bak 10_2021.xlsx
+    // D:\University\Cursah\New\test\2021_Rozklad bak 2sem.xlsx
 }

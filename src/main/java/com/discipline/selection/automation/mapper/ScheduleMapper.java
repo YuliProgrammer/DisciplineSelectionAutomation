@@ -4,6 +4,7 @@ import com.discipline.selection.automation.exceptions.InvalidDataException;
 import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.LessonType;
+import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
 import lombok.experimental.UtilityClass;
 
@@ -78,7 +79,7 @@ public class ScheduleMapper {
                             .collect(Collectors.toList());
                     break;
                 case 7:
-                    schedule.setDayOfWeek(value);
+                    schedule.setDayOfWeek(WeekDay.of(value, rowIndex, fileName));
                     break;
                 case 8:
                     if (value.endsWith(".")) {

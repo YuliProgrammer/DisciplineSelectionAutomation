@@ -2,6 +2,7 @@ package com.discipline.selection.automation.model;
 
 import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.LessonType;
+import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +34,7 @@ public class Schedule {
     private String teacherName;       // should be stored in column by index 4
     private WeekType typeOfWeek;      // should be stored in column by index 5
     private Integer lessonNumber;      // should be stored in column by index 6
-    private String dayOfWeek;         // should be stored in column by index 7
+    private WeekDay dayOfWeek;         // should be stored in column by index 7
     private LessonType lessonType;    // should be stored in column by index 8
     private String groupNumber;       // should be stored in column by index 9
     private FacultyType facultyType;  // should be stored in column by index 10
@@ -55,7 +56,7 @@ public class Schedule {
     }
 
     public String scheduleForConsolidationOfDisciplines() {
-        return teacherName + BLANK_LINE + dayOfWeek + BLANK_LINE + lessonNumber + BLANK_LINE + typeOfWeek.getName() +
+        return teacherName + BLANK_LINE + dayOfWeek.getName() + BLANK_LINE + lessonNumber + BLANK_LINE + typeOfWeek.getName() +
                 BLANK_LINE + lessonType.getName();
     }
 

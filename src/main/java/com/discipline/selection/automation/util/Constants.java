@@ -18,6 +18,8 @@ public class Constants {
     public static final String BLANK_LINE = " ";
     public static final String XLS_FILE_FORMAT = ".xls";
     public static final String XLSX_FILE_FORMAT = ".xlsx";
+    public static final String DISCIPLINE = "discipline";
+    public static final String GROUP = "group";
 
     public static final Integer ONE = 1;
     public static final Integer NUMBER_OF_STUDENTS_IN_FLOW = 75;
@@ -26,12 +28,12 @@ public class Constants {
     public static final String OUTPUT_FILE_NAME = "_Розклад_обраних_вибiркових_дисциплiн.xlsx";
     public static final String STUDENTS_COUNT_COLUMN_TITLE = "К-ть студентiв";
     public static final String CONSOLIDATION_OF_DISCIPLINES_SHEET_NAME = "Зведення дисц шифр спец";
+    public static final String SCHEDULE_BY_GROUPS_SHEET_NAME = "Розклад груп";
     public static final String CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_SHEET_NAME = "Звед студ дисципл розклад ";
     public static final String CONSOLIDATION_OF_DISCIPLINES_DUPLICATED_SCHEDULE_SHEET_NAME =
             "Звед студ дисц розклад (дубл.)";
     public static final String CONSOLIDATION_OF_DISCIPLINES_FAR_SCHEDULE_SHEET_NAME =
             "Звед студ дисц розклад (факультети.)";
-
     public static final String CHOSEN_DISCIPLINES_FOR_DIFFERENT_FACILITIES_SHEET_NAME =
             "Назви обраних рiзними фак дисц";
 
@@ -45,5 +47,8 @@ public class Constants {
             "iм'я та прiзвище студента", "Шифр групи",
             "Розклад занять (Прiзище та iм'я НПП, днi тижня, пара, види занять)",
             "Місце проведення", "Корпус/аудиторія, де будуть проводиться заняття"));
+
+    public static final Set<String> SCHEDULE_BY_GROUPS_HEADER =
+            new LinkedHashSet<>(Arrays.asList("День", "Пара", "Числ/знам"));
 
 }
