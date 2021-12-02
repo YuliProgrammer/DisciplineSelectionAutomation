@@ -331,8 +331,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
      * @param isDuplicate  - boolean value that shows if the current row is duplicate.
      * @param isFacultyFar - boolean value that shows if the current faculty is far from neighbor.
      *                     <p>
-     *                     If isDuplicate = true - the row`s color is yellow.
-     *                     If isFacultyFar = true - the row`s color is orange.
+     *                     If isDuplicate = true - the row`s color is orange.
+     *                     If isFacultyFar = true - the row`s color is yellow.
      *                     If both parameters = true - the foreground is red.
      * @return cell style.
      */
