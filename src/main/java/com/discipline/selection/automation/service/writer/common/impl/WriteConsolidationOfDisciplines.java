@@ -24,6 +24,7 @@ import static com.discipline.selection.automation.MainApplication.FILE_NAMES;
 import static com.discipline.selection.automation.model.enums.LessonType.LABORATORY;
 import static com.discipline.selection.automation.model.enums.LessonType.PRACTICE;
 import static com.discipline.selection.automation.util.Constants.OUTPUT_FILE_NAME;
+import static com.discipline.selection.automation.util.Constants.OUTPUT_FILE_NAME_SCHEDULE;
 
 /**
  * Class that calls of WriteConsolidationOfDisciplinesToNewExcelImpl and WriteConsolidationOfDisciplinesScheduleToNewExcelImpl
@@ -75,21 +76,25 @@ public class WriteConsolidationOfDisciplines implements Writer {
     }
 
     public void writeToExcel() {
+        writeConsolidation();
+        writeSchedule();
+    }
+
+    private void writeConsolidation() {
+        System.out.println("\nЗапис зведення дисциплiн...");
         WriteToExcel writeConsolidationOfDisciplines =
                 new WriteConsolidationOfDisciplinesToNewExcelImpl(studentsGroupedByDiscipline, disciplines, schedule);
         WriteToExcel writeConsolidationOfDisciplinesScheduleToNewExcel =
-                new WriteConsolidationOfDisciplinesScheduleToNewExcelImpl(studentsGroupedByDiscipline, disciplines, schedule,
+                new WriteConsolidationOfDisciplinesScheduleToNewExcelImpl(studentsGroupedByDiscipline, disciplines,
+                        schedule,
                         disciplinesWithoutSchedule);
-        WriteToExcel writeScheduleByGroups =
-                new WriteScheduleByGroupsToNewExcelImpl(studentsGroupedByGroup, disciplines, schedule);
 
-        String fileName = getFileName();
+        String fileName = getFileNameForConsolidation();
         File file = new File(fileName);
 
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             writeConsolidationOfDisciplines.writeToExcel(workbook);
             writeConsolidationOfDisciplinesScheduleToNewExcel.writeToExcel(workbook);
-            writeScheduleByGroups.writeToExcel(workbook);
 
             writeToWorkbook(file, workbook);
             System.out.println(String.format("Зведення дисциплiн було записано у новий вихiдний файл \"%s\" (Лист №1).",
@@ -99,6 +104,26 @@ public class WriteConsolidationOfDisciplines implements Writer {
             System.out.println(
                     String.format("Дублiкати розкладу студентiв були записанi у новий вихiдний файл \"%s\" (Лист №3).",
                             fileName));
+            System.out.println(
+                    String.format("Різні типи факультетів були записанi у новий вихiдний файл \"%s\" (Лист №4).",
+                            fileName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeSchedule() {
+        System.out.println("\nЗапис розкладу...");
+        WriteToExcel writeScheduleByGroups =
+                new WriteScheduleByGroupsToNewExcelImpl(studentsGroupedByGroup, disciplines, schedule);
+        String fileName = getFileNameForSchedule();
+        File file = new File(fileName);
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            writeScheduleByGroups.writeToExcel(workbook);
+            writeToWorkbook(file, workbook);
+            System.out.println(String.format("Розклад груп було записано у новий вихiдний файл \"%s\" (Лист №1).",
+                    fileName));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,6 +134,19 @@ public class WriteConsolidationOfDisciplines implements Writer {
      *
      * @return file name
      */
+    private String getFileNameForConsolidation() {
+        return getFileName() + OUTPUT_FILE_NAME;
+    }
+
+    /**
+     * Void generate name of new output file.
+     *
+     * @return file name
+     */
+    private String getFileNameForSchedule() {
+        return getFileName() + OUTPUT_FILE_NAME_SCHEDULE;
+    }
+
     private String getFileName() {
         String separator = File.separator;
         String inputFileName = FILE_NAMES.get(0);
@@ -117,7 +155,7 @@ public class WriteConsolidationOfDisciplines implements Writer {
         String outputPath = inputFileName.substring(0, indexOfLastSlash);
 
         String outputYear = getYear();
-        return outputPath + outputYear + OUTPUT_FILE_NAME;
+        return outputPath + outputYear;
     }
 
     /**

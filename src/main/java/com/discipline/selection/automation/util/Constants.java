@@ -26,6 +26,8 @@ public class Constants {
     public static final Integer NUMBER_OF_STUDENTS_IN_GROUP = 30;
 
     public static final String OUTPUT_FILE_NAME = "_Розклад_обраних_вибiркових_дисциплiн.xlsx";
+    public static final String OUTPUT_FILE_NAME_SCHEDULE = "_Розклад.xlsx";
+
     public static final String STUDENTS_COUNT_COLUMN_TITLE = "К-ть студентiв";
     public static final String CONSOLIDATION_OF_DISCIPLINES_SHEET_NAME = "Зведення дисц шифр спец";
     public static final String SCHEDULE_BY_GROUPS_SHEET_NAME = "Розклад груп";

@@ -50,7 +50,6 @@ public class MainApplication {
         Writer writeStudentsCount = new WriteStudentsCount(studentsGroupedByDiscipline, disciplines);
         writeStudentsCount.writeToExcel();
 
-        System.out.println("\nЗапис зведення дисциплiн...");
         Writer writeConsolidationOfDisciplines = new WriteConsolidationOfDisciplines(studentsGroupedByGroup,
                 studentsGroupedByDiscipline, disciplines, schedule);
         writeConsolidationOfDisciplines.writeToExcel();

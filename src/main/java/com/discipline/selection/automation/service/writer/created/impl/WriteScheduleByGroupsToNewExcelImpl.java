@@ -4,6 +4,9 @@ import com.discipline.selection.automation.model.Discipline;
 import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroups;
 import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.enums.FacultyType;
+import com.discipline.selection.automation.model.enums.WeekDay;
+import com.discipline.selection.automation.model.enums.WeekType;
 import com.discipline.selection.automation.service.writer.created.WriteDisciplinesToNewExcel;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -18,8 +21,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.discipline.selection.automation.model.enums.WeekDay.DAYS;
+import static com.discipline.selection.automation.model.enums.WeekType.EVERY_WEEK;
 import static com.discipline.selection.automation.model.enums.WeekType.WEEK_TYPES;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GROUPS_HEADER;
+import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GROUPS_SHEET_NAME;
 
 /**
  * Class that creates the schedule of disciplines for students and
@@ -31,6 +36,7 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
 
     private final Set<String> studentsGroups;
     private int rowIndex = 2;
+    private int columnIndex = 0;
     List<String> values = new ArrayList<>();
 
 
@@ -46,11 +52,7 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
     @Override
     public void writeToExcel(XSSFWorkbook workbook) {
         initStyles(workbook);
-
-        XSSFSheet scheduleSheet = workbook.createSheet("test");
-
-//        Set<ConsolidationOfDisciplinesSchedule> schedules = generateSchedule();
-//
+        XSSFSheet scheduleSheet = workbook.createSheet(SCHEDULE_BY_GROUPS_SHEET_NAME);
         writeHeader(scheduleSheet);
         writeDiscipline(scheduleSheet);
     }
@@ -64,9 +66,8 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
      * @param sheet - current new sheet
      */
     private void writeHeader(XSSFSheet sheet) {
-        int columnIndex = 0;
-        writeHeader(sheet, SCHEDULE_BY_GROUPS_HEADER, columnIndex);
-        writeHeader(sheet, studentsGroups, columnIndex); // write the second part of the header
+        columnIndex = writeHeader(sheet, SCHEDULE_BY_GROUPS_HEADER, columnIndex);
+        columnIndex = writeHeader(sheet, studentsGroups, columnIndex); // write the second part of the header
     }
 
 
@@ -82,82 +83,97 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
                     values.add(day.getName());
                     values.add(String.valueOf(lessonNumber));
                     values.add(weekType.getName());
-                    for (String group : studentsGroups) {
-                        Set<ScheduleByGroups> scheduleByGroups = new HashSet<>();
-                        students.get(group).forEach(student -> {
-                            List<Schedule> scheduleByDisciplineForCurrentStudent =
-                                    schedules.get(student.getDiscipline().getDisciplineCipher());
-                            if (scheduleByDisciplineForCurrentStudent != null) {
-                                List<ScheduleByGroups> schedules =
-                                        scheduleByDisciplineForCurrentStudent.stream()
-                                                .filter(schedule -> schedule.getDayOfWeek().equals(day))
-                                                .filter(schedule -> schedule.getLessonNumber()
-                                                        .equals(lessonNumber))
-                                                .filter(schedule -> schedule.getTypeOfWeek().equals(weekType))
-                                                .map(this::generateScheduleByGroups)
-                                                .collect(Collectors.toList());
-                                scheduleByGroups.addAll(schedules);
-                            }
-                        });
-
-                        Set<String> disciplineValues = new HashSet<>();
-                        scheduleByGroups.stream().forEach(s -> {
-                            String discipline = s.getOneDisciplineCipher() + "(" + s.getFacultyType() + ")\n";
-                            disciplineValues.add(discipline);
-                        });
-                        values.add(String.join("", disciplineValues));
-                    }
-
-                    // write entry
+                    values.addAll(getValuesForAllGroups(day, lessonNumber, weekType));
                     writeEntry(sheet, values);
-                    values = new ArrayList<>();
-                    System.out.println(day + " " + lessonNumber + " " + weekType);
                 });
             });
+            writeEmptyLine(sheet);
         });
+    }
 
-//        for (String group : studentsGroups) {
-//            Map<String, Set<ScheduleByGroups>> scheduleByGroupsAndWeekDay = new HashMap<>();
-//            Set<ScheduleByGroups> scheduleByGroups = new HashSet<>();
-//
-//            List<Student> studentsByGroup = students.get(group);
-//            studentsByGroup.forEach(student -> {
-//                List<Schedule> scheduleByDisciplineForCurrentStudent =
-//                        schedules.get(student.getDiscipline().getDisciplineCipher());
-//                if (scheduleByDisciplineForCurrentStudent != null) {
-//                    scheduleByGroups.addAll(scheduleByDisciplineForCurrentStudent.stream()
-//                            .map(this::generateScheduleByGroups).collect(Collectors.toList()));
-//                }
-//            });
-//
-//            scheduleByGroups.forEach(scheduleByGroup -> {
-//                String weekDay = scheduleByGroup.getDayOfWeek().getName();
-//                Set<ScheduleByGroups> currentSchedule = scheduleByGroupsAndWeekDay.get(weekDay);
-//                currentSchedule = currentSchedule == null ? new HashSet<>() : currentSchedule;
-//                currentSchedule.add(scheduleByGroup);
-//                scheduleByGroupsAndWeekDay.put(weekDay, currentSchedule);
-//            });
-//
-//
-//            Map<String, List<ScheduleByGroups>> sortedScheduleByGroupsAndWeekDay = new HashMap<>();
-//            scheduleByGroupsAndWeekDay.forEach((key, value) -> {
-//                List<ScheduleByGroups> sortedScheduleByGroups = value.stream()
-//                        .sorted(Comparator.comparing(ScheduleByGroups::getLessonNumber))
-//                        .sorted(Comparator.comparing(ScheduleByGroups::getTypeOfWeek))
-//                        .collect(Collectors.toList());
-//                sortedScheduleByGroupsAndWeekDay.put(key, sortedScheduleByGroups);
-//            });
-//
-//            rowIndex++;
-//            System.out.println("sortedScheduleByGroups: " + sortedScheduleByGroupsAndWeekDay);
-//        }
+    /**
+     * Method get schedules  for all groups that corresponds to current parameters
+     *
+     * @param day          - the day of week on which the discipline is to be held
+     * @param lessonNumber - the lesson number on which the discipline is to be held
+     * @param weekType     - the week type on which the discipline is to be held
+     * @return list of discipline ciphers. Each element - it is an enumeration of disciplines for one group
+     */
+    private List<String> getValuesForAllGroups(WeekDay day, int lessonNumber, WeekType weekType) {
+        List<String> groupDisciplines = new ArrayList<>();
+        for (String group : studentsGroups) {
+            Set<ScheduleByGroups> scheduleByGroups = new HashSet<>();
+            students.get(group).forEach(student -> {
+                List<Schedule> scheduleByDisciplineForCurrentStudent =
+                        schedules.get(student.getDiscipline().getDisciplineCipher());
+                if (scheduleByDisciplineForCurrentStudent != null) {
+                    List<ScheduleByGroups> schedules = filterScheduleForStudent(scheduleByDisciplineForCurrentStudent,
+                            group, day, lessonNumber, weekType);
+                    scheduleByGroups.addAll(schedules);
+                }
+            });
 
+            Set<String> disciplineValues = getDisciplinesForAllGroupAndOneLesson(scheduleByGroups);
+            groupDisciplines.add(String.join("", disciplineValues));
+        }
 
+        return groupDisciplines.stream().map(String::trim).collect(Collectors.toList());
+    }
+
+    /**
+     * @param scheduleByDisciplineForCurrentStudent - list of schedules for current student
+     * @param group                                 - group of current student
+     * @param day                                   - the day of week on which the discipline is to be held
+     * @param lessonNumber                          - the lesson number on which the discipline is to be held
+     * @param weekType                              - the week type on which the discipline is to be held
+     * @return list of schedules for current student that that corresponds to current parameters
+     */
+    private List<ScheduleByGroups> filterScheduleForStudent(List<Schedule> scheduleByDisciplineForCurrentStudent,
+                                                            String group, WeekDay day, int lessonNumber,
+                                                            WeekType weekType) {
+        return scheduleByDisciplineForCurrentStudent.stream()
+                .filter(schedule -> scheduleContainsGroup(schedule, group))
+                .filter(schedule -> schedule.getDayOfWeek().equals(day))
+                .filter(schedule -> schedule.getLessonNumber()
+                        .equals(lessonNumber))
+                .filter(schedule -> schedule.getTypeOfWeek().equals(weekType) ||
+                        (!weekType.equals(EVERY_WEEK) && schedule.getTypeOfWeek().equals(EVERY_WEEK)))
+                .map(this::generateScheduleByGroups)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * @param schedule - current schedule
+     * @param group    - current group
+     * @return true when current group starts with one of group code from the current schedule
+     */
+    private boolean scheduleContainsGroup(Schedule schedule, String group) {
+        return schedule.getGroupCodes().stream().anyMatch(group::startsWith);
+    }
+
+    /**
+     * @param scheduleByGroups - list of schedules for current group
+     * @return set of disciplines ciphers for current group
+     */
+    private Set<String> getDisciplinesForAllGroupAndOneLesson(Set<ScheduleByGroups> scheduleByGroups) {
+        Set<String> disciplineValues = new HashSet<>();
+        scheduleByGroups.forEach(s -> {
+            FacultyType facultyType = s.getFacultyType();
+            String faculty = facultyType != null ? "(" + facultyType.getType() + ")" : "";
+            String discipline = s.getOneDisciplineCipher() + faculty + "\n";
+            disciplineValues.add(discipline);
+        });
+        return disciplineValues;
     }
 
     private void writeEntry(XSSFSheet sheet, List<String> values) {
         writeEntry(sheet, setForeground(rowIndex), values, rowIndex);
         rowIndex += 1;
+        this.values = new ArrayList<>();
+    }
+
+    private void writeEmptyLine(XSSFSheet sheet) {
+        writeEmptyLine(sheet, emptyCellStyle, rowIndex, columnIndex);
     }
 
     /**

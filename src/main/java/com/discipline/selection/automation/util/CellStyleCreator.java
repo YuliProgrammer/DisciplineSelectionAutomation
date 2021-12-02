@@ -15,6 +15,20 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class CellStyleCreator {
 
     /**
+     * Function that create cell style for empty rows
+     *
+     * @param workbook - current workbook
+     * @return cell style with all basics characteristics like:
+     * 1. white foreground color
+     */
+    public XSSFCellStyle createDefaultCellStyleCharacteristics(XSSFWorkbook workbook) {
+        XSSFCellStyle foregroundStyle = workbook.createCellStyle();
+        foregroundStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        foregroundStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+        return foregroundStyle;
+    }
+
+    /**
      * Function that create cell style for even rows (rowIndex % 2 = 0)
      *
      * @param workbook - current workbook
