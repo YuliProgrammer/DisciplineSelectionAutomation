@@ -45,4 +45,22 @@ public interface WriteToExcel {
         }
     }
 
+    /**
+     * Void that write empty line to excel
+     *
+     * @param sheet     - current sheet
+     * @param cellStyle - basic cell style
+     * @param rowIndex  - index of new row
+     */
+    default void writeEmptyLine(XSSFSheet sheet, CellStyle cellStyle, int rowIndex, int columnCount) {
+        Cell cell;
+        int columnIndex = 0;
+        XSSFRow row = sheet.createRow(rowIndex);
+
+        for (int i = 0; i < columnCount; i++) {
+            cell = row.createCell(columnIndex++, CellType.STRING);
+            cell.setCellValue(" ");
+            cell.setCellStyle(cellStyle);
+        }
+    }
 }

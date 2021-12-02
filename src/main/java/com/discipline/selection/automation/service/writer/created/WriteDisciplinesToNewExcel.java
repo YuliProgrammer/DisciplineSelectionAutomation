@@ -23,6 +23,7 @@ import java.util.Set;
  */
 public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
 
+    protected XSSFCellStyle emptyCellStyle;
     protected XSSFCellStyle evenCellStyle;
     protected XSSFCellStyle oddCellStyle;
     protected XSSFCellStyle farCellStyle;
@@ -39,6 +40,7 @@ public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
      * @param workbook - current workbook
      */
     protected void initStyles(XSSFWorkbook workbook) {
+        emptyCellStyle = CellStyleCreator.createDefaultCellStyleCharacteristics(workbook);
         evenCellStyle = CellStyleCreator.createEvenCellStyleCharacteristics(workbook);
         oddCellStyle = CellStyleCreator.createOddCellStyleCharacteristics(workbook);
         farCellStyle = CellStyleCreator.createFarCellStyleCharacteristics(workbook);
@@ -78,7 +80,7 @@ public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
 
             if (title.contains("НПП") || title.contains("Назва") || title.contains("iм'я")) {
                 sheet.setColumnWidth(columnIndex, 45 * 256);
-            } else if (title.contains("Шифр") || title.contains("дублiкат")) {
+            } else if (title.contains("Шифр") || title.contains("дублiкат") || title.matches(".*-.*-.*")) {
                 sheet.setColumnWidth(columnIndex, 15 * 256);
             } else {
                 sheet.setColumnWidth(columnIndex, 9 * 256);
