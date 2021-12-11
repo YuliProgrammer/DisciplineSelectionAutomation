@@ -45,24 +45,26 @@ public class WriteStudentsCount implements Writer {
 
         try (FileInputStream inputStream = new FileInputStream(fileName);
              XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            writeStudentsCount.writeToExcel(workbook);
+            System.out.println(
+                    String.format(
+                            "Поточна кiлькiсть студентiв була записана у iснуючий вхiдний файл \"%s\"(Лист №2).",
+                            fileName));
             if (workbook.getSheet(CHOSEN_DISCIPLINES_FOR_DIFFERENT_FACILITIES_SHEET_NAME) != null) {
+                ((WriteStudentsCountToExistedExcelSheetImpl) writeStudentsCount).setSheetIndex(2);
+                writeStudentsCount.writeToExcel(workbook);
                 System.out.println(
                         String.format(
                                 "Список дисциплiн, якi обрали студенти з рiзних факультетiв, вже iснує у iснуючому вхiдному файлi \"%s\" (Лист №3).",
                                 fileName));
             } else {
-                writeStudentsCount.writeToExcel(workbook);
                 writeDisciplinesForDifferentFacilities.writeToExcel(workbook);
-                writeToWorkbook(file, workbook);
-                System.out.println(
-                        String.format(
-                                "Поточна кiлькiсть студентiв була записана у iснуючий вхiдний файл \"%s\"(Лист №2).",
-                                fileName));
                 System.out.println(
                         String.format(
                                 "Список дисциплiн, якi обрали студенти з рiзних факультетiв, було записано у iснуючий вхiдний файл \"%s\" (Лист №3).",
                                 fileName));
             }
+            writeToWorkbook(file, workbook);
         } catch (IOException e) {
             e.printStackTrace();
         }
