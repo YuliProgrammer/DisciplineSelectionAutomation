@@ -55,7 +55,7 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
         initStyles(workbook);
         XSSFSheet scheduleSheet = workbook.createSheet(SCHEDULE_BY_GROUPS_SHEET_NAME);
         writeHeader(scheduleSheet);
-        writeDiscipline(scheduleSheet);
+        writeSchedule(scheduleSheet);
     }
 
 
@@ -74,11 +74,11 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
 
 
     /**
-     * Void that write disciplines to excel.
+     * Void that write schedule to excel.
      *
      * @param sheet - current sheet
      */
-    private void writeDiscipline(XSSFSheet sheet) {
+    private void writeSchedule(XSSFSheet sheet) {
         Arrays.stream(DAYS).forEach(day -> {
             IntStream.range(1, 8).forEach(lessonNumber -> {
                 Arrays.stream(WEEK_TYPES).forEach(weekType -> {
