@@ -102,10 +102,10 @@ public class WriteConsolidationOfDisciplines implements Writer {
             System.out.println(
                     String.format("Розклад студентiв було записано у новий вихiдний файл \"%s\" (Лист №2).", fileName));
             System.out.println(
-                    String.format("Дублiкати розкладу студентiв були записанi у новий вихiдний файл \"%s\" (Лист №3).",
+                    String.format("Дублiкати розкладу студентiв було записано у новий вихiдний файл \"%s\" (Лист №3).",
                             fileName));
             System.out.println(
-                    String.format("Різні типи факультетів були записанi у новий вихiдний файл \"%s\" (Лист №4).",
+                    String.format("Проблеми з перейздом було записано у новий вихiдний файл \"%s\" (Лист №4).",
                             fileName));
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,7 +113,7 @@ public class WriteConsolidationOfDisciplines implements Writer {
     }
 
     private void writeSchedule() {
-        System.out.println("\nЗапис розкладу...");
+        System.out.println("\nЗапис розкладу груп...");
         WriteToExcel writeScheduleByGroups =
                 new WriteScheduleByGroupsToNewExcelImpl(studentsGroupedByGroup, disciplines, schedule);
         String fileName = getFileNameForSchedule();

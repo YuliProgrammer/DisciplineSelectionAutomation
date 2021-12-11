@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +35,7 @@ import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GRO
  */
 public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewExcel {
 
-    private final Set<String> studentsGroups;
+    private final List<String> studentsGroups;
     private int rowIndex = 2;
     private int columnIndex = 0;
     List<String> values = new ArrayList<>();
@@ -46,7 +47,7 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
         this.students = studentsGroupedByGroup;
         this.disciplines = disciplines;
         this.schedules = schedules;
-        this.studentsGroups = getStudentsGroups();
+        this.studentsGroups = getStudentsGroups().stream().sorted().collect(Collectors.toList());
     }
 
     @Override
@@ -67,7 +68,8 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
      */
     private void writeHeader(XSSFSheet sheet) {
         columnIndex = writeHeader(sheet, SCHEDULE_BY_GROUPS_HEADER, columnIndex);
-        columnIndex = writeHeader(sheet, studentsGroups, columnIndex); // write the second part of the header
+        columnIndex = writeHeader(sheet, new LinkedHashSet<>(studentsGroups),
+                columnIndex); // write the second part of the header
     }
 
 
@@ -186,6 +188,7 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
     private ScheduleByGroups generateScheduleByGroups(Schedule schedule) {
         return ScheduleByGroups.builder()
                 .oneDisciplineCipher(schedule.getDisciplineCipher())
+                .facultyType(schedule.getFacultyType())
                 .dayOfWeek(schedule.getDayOfWeek())
                 .lessonNumber(schedule.getLessonNumber())
                 .typeOfWeek(schedule.getTypeOfWeek())

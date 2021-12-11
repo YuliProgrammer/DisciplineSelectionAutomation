@@ -13,7 +13,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupedStudents {
-   private Map<String, List<Student>> studentsGroupedByDisciplines = new LinkedHashMap<>();
-    private   Map<String, List<Student>> studentsGroupedByGroup = new LinkedHashMap<>();
+public class GroupedSchedule {
+    private Map<String, List<Schedule>> schedulesGroupedByDisciplineCipher = new LinkedHashMap<>();
+    private Map<String, List<Schedule>> schedulesGroupedByTeacher = new LinkedHashMap<>();
 }

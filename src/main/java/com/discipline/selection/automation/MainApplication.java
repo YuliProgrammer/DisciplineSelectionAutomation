@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static com.discipline.selection.automation.util.Constants.DISCIPLINE;
 import static com.discipline.selection.automation.util.Constants.GROUP;
+import static com.discipline.selection.automation.util.Constants.TEACHER;
 
 public class MainApplication {
 
@@ -25,7 +26,8 @@ public class MainApplication {
             new ReadStudentsFromExcelImpl();
     private final static ReadFromExcel<String, Discipline> readDisciplinesFromExcel =
             new ReadDisciplinesFromExcelImpl();
-    private final static ReadFromExcel<String, List<Schedule>> readScheduleFromExcel = new ReadScheduleFromExcelImpl();
+    private final static ReadFromExcel<String, Map<String, List<Schedule>>> readScheduleFromExcel =
+            new ReadScheduleFromExcelImpl();
 
     public static List<String> FILE_NAMES;
 
@@ -38,7 +40,9 @@ public class MainApplication {
 
         System.out.println("\nЧитання даних з вказаних файлiв...");
 
-        Map<String, List<Schedule>> schedule = readScheduleFromExcel.uploadData();
+        Map<String, Map<String, List<Schedule>>> groupedSchedule = readScheduleFromExcel.uploadData();
+        Map<String, List<Schedule>> schedulesGroupedByDisciplineCipher = groupedSchedule.get(DISCIPLINE);
+        Map<String, List<Schedule>> schedulesGroupedByTeacher = groupedSchedule.get(TEACHER);
 
         Map<String, Map<String, List<Student>>> groupedStudents = readStudentsFromExcel.uploadData();
         Map<String, List<Student>> studentsGroupedByDiscipline = groupedStudents.get(DISCIPLINE);
@@ -51,7 +55,7 @@ public class MainApplication {
         writeStudentsCount.writeToExcel();
 
         Writer writeConsolidationOfDisciplines = new WriteConsolidationOfDisciplines(studentsGroupedByGroup,
-                studentsGroupedByDiscipline, disciplines, schedule);
+                studentsGroupedByDiscipline, disciplines, schedulesGroupedByDisciplineCipher);
         writeConsolidationOfDisciplines.writeToExcel();
 
         System.out.println("\nКiнець роботи програми.");

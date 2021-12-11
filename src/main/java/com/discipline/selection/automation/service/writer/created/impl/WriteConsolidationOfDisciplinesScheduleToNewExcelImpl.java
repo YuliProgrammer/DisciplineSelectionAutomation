@@ -149,7 +149,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         Row firstRow = sheet.getRow(0);
         Cell cell = firstRow.createCell(CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_HEADER.size() + 1);
         cell.setCellStyle(CellStyleCreator.createMainHeaderCellStyleCharacteristics(sheet.getWorkbook()));
-        cell.setCellValue("Виявлена кiлькiсть дублiкатiв: " + duplicatesCount);
+        cell.setCellValue("Виявлена к-ть дублiкатiв: " + duplicatesCount);
     }
 
     /**
@@ -162,9 +162,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         Row firstRow = sheet.getRow(0);
         Cell cell = firstRow.createCell(CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_HEADER.size() + 2);
         cell.setCellStyle(CellStyleCreator.createMainHeaderCellStyleCharacteristics(sheet.getWorkbook()));
-        cell.setCellValue(
-                "Виявлена кiлькiсть дисцплін, факультети яких знаходяться далеко один від одного: " +
-                        farFacultiesCount);
+        cell.setCellValue("Виявлена к-ть дисцплін, у яких є проблеми при переїзді: " + farFacultiesCount);
     }
 
     /**
@@ -205,7 +203,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
             }
 
             ConsolidationOfDisciplinesSchedule consolidationOfDisciplinesSchedule =
-                    createConsolidationOfDisciplinesSchedule(disciplineCipher, student);
+                    createConsolidationOfDisciplines(disciplineCipher, student);
             consolidationOfDisciplinesSchedule.setSchedule(schedule);
             schedules.add(consolidationOfDisciplinesSchedule);
         }
@@ -220,8 +218,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
      * @param disciplineCipher - cipher of current discipline
      * @return ConsolidationOfDisciplinesSchedule for this student and discipline
      */
-    private ConsolidationOfDisciplinesSchedule createConsolidationOfDisciplinesSchedule(String disciplineCipher,
-                                                                                        Student student) {
+    private ConsolidationOfDisciplinesSchedule createConsolidationOfDisciplines(String disciplineCipher,
+                                                                                Student student) {
         ConsolidationOfDisciplinesSchedule consolidationOfDisciplinesSchedule =
                 new ConsolidationOfDisciplinesSchedule();
         consolidationOfDisciplinesSchedule.setFacilityFirstLetter(student.getFacilityCipher().substring(0, 1));

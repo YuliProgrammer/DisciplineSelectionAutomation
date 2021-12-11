@@ -20,13 +20,14 @@ public class Constants {
     public static final String XLSX_FILE_FORMAT = ".xlsx";
     public static final String DISCIPLINE = "discipline";
     public static final String GROUP = "group";
+    public static final String TEACHER = "teacher";
 
     public static final Integer ONE = 1;
     public static final Integer NUMBER_OF_STUDENTS_IN_FLOW = 75;
     public static final Integer NUMBER_OF_STUDENTS_IN_GROUP = 30;
 
     public static final String OUTPUT_FILE_NAME = "_Розклад_обраних_вибiркових_дисциплiн.xlsx";
-    public static final String OUTPUT_FILE_NAME_SCHEDULE = "_Розклад.xlsx";
+    public static final String OUTPUT_FILE_NAME_SCHEDULE = "_Розклад_груп.xlsx";
 
     public static final String STUDENTS_COUNT_COLUMN_TITLE = "К-ть студентiв";
     public static final String CONSOLIDATION_OF_DISCIPLINES_SHEET_NAME = "Зведення дисц шифр спец";
@@ -35,7 +36,7 @@ public class Constants {
     public static final String CONSOLIDATION_OF_DISCIPLINES_DUPLICATED_SCHEDULE_SHEET_NAME =
             "Звед студ дисц розклад (дубл.)";
     public static final String CONSOLIDATION_OF_DISCIPLINES_FAR_SCHEDULE_SHEET_NAME =
-            "Звед студ дисц розклад (факультети.)";
+            "Звед студ дисц розклад (переїзд.)";
     public static final String CHOSEN_DISCIPLINES_FOR_DIFFERENT_FACILITIES_SHEET_NAME =
             "Назви обраних рiзними фак дисц";
 
