@@ -12,6 +12,7 @@ public class Constants {
     public static final Integer STUDENTS_SHEET_INDEX = 0;
     public static final Integer SCHEDULE_SHEET_INDEX = 0;
     public static final Integer DISCIPLINES_SHEET_INDEX = 1;
+    public static final Integer DISCIPLINES_FOR_DIFF_FACULTIES_SHEET_INDEX = 2;
 
     public static final String COMA = ",";
     public static final String SEMICOLON = ";\n";

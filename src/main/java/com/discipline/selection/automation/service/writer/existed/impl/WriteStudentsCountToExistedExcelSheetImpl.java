@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.List;
 import java.util.Map;
 
+import static com.discipline.selection.automation.util.Constants.DISCIPLINES_FOR_DIFF_FACULTIES_SHEET_INDEX;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINES_SHEET_INDEX;
 import static com.discipline.selection.automation.util.Constants.STUDENTS_COUNT_COLUMN_TITLE;
 
@@ -25,6 +26,8 @@ import static com.discipline.selection.automation.util.Constants.STUDENTS_COUNT_
  */
 public class WriteStudentsCountToExistedExcelSheetImpl extends WriteDisciplinesToExistedExcel {
 
+    private Integer sheetIndex = DISCIPLINES_SHEET_INDEX;
+
     public WriteStudentsCountToExistedExcelSheetImpl(Map<String, List<Student>> students,
                                                      Map<String, Discipline> disciplines) {
         this.students = students;
@@ -33,12 +36,21 @@ public class WriteStudentsCountToExistedExcelSheetImpl extends WriteDisciplinesT
 
     @Override
     public void writeToExcel(XSSFWorkbook workbook) {
-        int indexOfLastColumn = disciplinesHeader.size();
-        XSSFSheet sheet = workbook.getSheetAt(DISCIPLINES_SHEET_INDEX);
+        int indexOfLastColumn = disciplinesHeader.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(STUDENTS_COUNT_COLUMN_TITLE))
+                .findFirst()
+                .map(Map.Entry::getKey)
+                .orElseGet(() -> disciplinesHeader.size());
+
+        XSSFSheet sheet = workbook.getSheetAt(sheetIndex);
 
         writeNewColumnStudentsCountToHeader(sheet, indexOfLastColumn);
         writeCurrentStudentsCountForAllDisciplines(sheet, indexOfLastColumn);
         sheet.autoSizeColumn(indexOfLastColumn);
+    }
+
+    public void setSheetIndex(Integer sheetIndex) {
+        this.sheetIndex = sheetIndex == 2 ? DISCIPLINES_FOR_DIFF_FACULTIES_SHEET_INDEX : DISCIPLINES_SHEET_INDEX;
     }
 
     /**

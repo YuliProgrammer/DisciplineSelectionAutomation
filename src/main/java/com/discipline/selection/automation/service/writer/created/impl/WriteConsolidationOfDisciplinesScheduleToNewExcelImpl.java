@@ -62,8 +62,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
                 workbook.createSheet(CONSOLIDATION_OF_DISCIPLINES_FAR_SCHEDULE_SHEET_NAME);
 
         Set<ConsolidationOfDisciplinesSchedule> schedules = generateSchedule();
-        Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule = isDuplicate(schedules);
-        Set<ConsolidationOfDisciplinesSchedule> farFacultiesSchedule = isAddressesFar(schedules);
+        Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule = getDuplicates(schedules);
+        Set<ConsolidationOfDisciplinesSchedule> farFacultiesSchedule = getAddressesFar(schedules);
 
         writeHeader(scheduleSheet);
         writeSchedule(scheduleSheet, schedules);
@@ -90,18 +90,6 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
 
 
     /**
-     * Void that write header for "Зведення дисц шифр спец".
-     * That header consists of two parts: the first part - it is basic header titles and
-     * the second part - it is a first 2 letters of students classes.
-     *
-     * @param sheet - current new sheet
-     */
-    private void writeHeader(XSSFSheet sheet) {
-        int columnIndex = 0;
-        writeHeader(sheet, CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_HEADER, columnIndex);
-    }
-
-    /**
      * Void that generate schedule for all students.
      *
      * @return schedule for all students
@@ -119,6 +107,18 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         }
 
         return schedules;
+    }
+
+    /**
+     * Void that write header for "Зведення дисц шифр спец".
+     * That header consists of two parts: the first part - it is basic header titles and
+     * the second part - it is a first 2 letters of students classes.
+     *
+     * @param sheet - current new sheet
+     */
+    private void writeHeader(XSSFSheet sheet) {
+        int columnIndex = 0;
+        writeHeader(sheet, CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_HEADER, columnIndex);
     }
 
     /**
@@ -242,9 +242,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
      * @param schedules -  full schedule for all students and disciplines that has chosen by students from different faculties
      * @return schedule that contain only duplicated items
      */
-    private Set<ConsolidationOfDisciplinesSchedule> isDuplicate(Set<ConsolidationOfDisciplinesSchedule> schedules) {
+    private Set<ConsolidationOfDisciplinesSchedule> getDuplicates(Set<ConsolidationOfDisciplinesSchedule> schedules) {
         Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule = new LinkedHashSet<>();
-
         schedules.forEach(disciplinesSchedule -> {
             Schedule currentSchedule = disciplinesSchedule.getSchedule();
             filterSchedule(schedules, disciplinesSchedule, currentSchedule)
@@ -263,7 +262,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
     }
 
     /**
-     * Void checks all schedule's rows and mark rows for neighboring lessons as 'Far' when faculties has different types.
+     * Void checks all schedule's rows and mark rows for neighboring lessons as 'Far' when faculties have different types.
      * Two schedule's rows be considered far for student when:
      * 1. They have the same types of week or one of types - it is a EVERY_WEEK.
      * 2. They have the same days of week.
@@ -273,9 +272,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
      * @param schedules -  full schedule for all students and disciplines that has chosen by students from different faculties
      * @return schedule that contain only far items
      */
-    private Set<ConsolidationOfDisciplinesSchedule> isAddressesFar(Set<ConsolidationOfDisciplinesSchedule> schedules) {
+    private Set<ConsolidationOfDisciplinesSchedule> getAddressesFar(Set<ConsolidationOfDisciplinesSchedule> schedules) {
         Set<ConsolidationOfDisciplinesSchedule> farAddressesSchedule = new LinkedHashSet<>();
-
         schedules.forEach(disciplinesSchedule -> {
             Schedule currentSchedule = disciplinesSchedule.getSchedule();
             filterSchedule(schedules, disciplinesSchedule, currentSchedule)
@@ -283,7 +281,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
                     .filter(consolidation -> Math.abs(consolidation.getSchedule().getLessonNumber()
                             - currentSchedule.getLessonNumber()) == 1)
                     .filter(consolidation -> Math.abs(consolidation.getSchedule().getFacultyType().getType()
-                            - currentSchedule.getFacultyType().getType()) == 1)
+                            - currentSchedule.getFacultyType().getType()) > 0)
                     .forEach(consolidation -> {
                         consolidation.setFacultiesFar(true);
                         farAddressesSchedule.add(consolidation);
