@@ -15,6 +15,7 @@ public class Student {
     private String course;
     private String group;
     private String disciplinesNumber;
+    private Integer currentNumberOfPracticeSchedule;
     private Discipline discipline = new Discipline();
 
 }

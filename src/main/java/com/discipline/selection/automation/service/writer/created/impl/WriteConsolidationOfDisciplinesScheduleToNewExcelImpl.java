@@ -1,5 +1,6 @@
 package com.discipline.selection.automation.service.writer.created.impl;
 
+import com.discipline.selection.automation.mapper.StringMapper;
 import com.discipline.selection.automation.model.ConsolidationOfDisciplinesSchedule;
 import com.discipline.selection.automation.model.Discipline;
 import com.discipline.selection.automation.model.Schedule;
@@ -18,6 +19,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -175,6 +177,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
     private Set<ConsolidationOfDisciplinesSchedule> createConsolidationOfDisciplinesSchedule(Student student,
                                                                                              String disciplineCipher) {
         Set<ConsolidationOfDisciplinesSchedule> schedules = new LinkedHashSet<>();
+        Discipline discipline = this.disciplines.get(disciplineCipher);
         List<Schedule> scheduleForCurrentDisciplineCipher = this.schedules.get(disciplineCipher);
 
         if (scheduleForCurrentDisciplineCipher == null) {
@@ -184,6 +187,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
 
         int indexOfLastHyphen = student.getGroup().lastIndexOf("-");
         String studentGroupCode = student.getGroup().substring(0, indexOfLastHyphen);
+        student.setCurrentNumberOfPracticeSchedule(0);
 
         List<Schedule> scheduleForDisciplineAndStudentGroup =
                 scheduleForCurrentDisciplineCipher.stream()
@@ -199,7 +203,17 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
 
         for (Schedule schedule : scheduleForDisciplineAndStudentGroup) {
             if (schedule.getLessonType().equals(LABORATORY) || schedule.getLessonType().equals(PRACTICE)) {
-                schedule.setNumberOfStudentsInSubGroup(schedule.getNumberOfStudentsInSubGroup() + 1);
+                String maxHoursPerLesson =
+                        schedule.getLessonType().equals(LABORATORY) ? discipline.getLaboratoryHoursPerWeek() :
+                                discipline.getPracticalHoursPerWeek();
+                Integer maxHours = StringMapper.parseStringToInt(maxHoursPerLesson);
+                if (maxHours != null && Objects.equals(student.getCurrentNumberOfPracticeSchedule(), maxHours)) {
+                    break;
+                }
+                if (schedule.getNumberOfStudentsInSubGroup() + 1 != schedule.getMaxNumberOfStudentsInSubGroup()) {
+                    schedule.setNumberOfStudentsInSubGroup(schedule.getNumberOfStudentsInSubGroup() + 1);
+                    student.setCurrentNumberOfPracticeSchedule(student.getCurrentNumberOfPracticeSchedule() + 1);
+                }
             }
 
             ConsolidationOfDisciplinesSchedule consolidationOfDisciplinesSchedule =

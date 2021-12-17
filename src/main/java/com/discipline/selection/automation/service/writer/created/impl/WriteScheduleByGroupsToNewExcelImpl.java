@@ -40,7 +40,6 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
     private int columnIndex = 0;
     List<String> values = new ArrayList<>();
 
-
     public WriteScheduleByGroupsToNewExcelImpl(Map<String, List<Student>> studentsGroupedByGroup,
                                                Map<String, Discipline> disciplines,
                                                Map<String, List<Schedule>> schedules) {
