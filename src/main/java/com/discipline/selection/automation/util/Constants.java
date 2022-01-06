@@ -28,11 +28,12 @@ public class Constants {
     public static final Integer NUMBER_OF_STUDENTS_IN_GROUP = 30;
 
     public static final String OUTPUT_FILE_NAME = "_Розклад_обраних_вибiркових_дисциплiн.xlsx";
-    public static final String OUTPUT_FILE_NAME_SCHEDULE = "_Розклад_груп.xlsx";
+    public static final String OUTPUT_FILE_NAME_SCHEDULE = "_Розклад_груп_та_НПП.xlsx";
 
     public static final String STUDENTS_COUNT_COLUMN_TITLE = "К-ть студентiв";
     public static final String CONSOLIDATION_OF_DISCIPLINES_SHEET_NAME = "Зведення дисц шифр спец";
     public static final String SCHEDULE_BY_GROUPS_SHEET_NAME = "Розклад груп";
+    public static final String SCHEDULE_BY_TEACHER_SHEET_NAME = "Розклад НПП";
     public static final String CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_SHEET_NAME = "Звед студ дисципл розклад ";
     public static final String CONSOLIDATION_OF_DISCIPLINES_DUPLICATED_SCHEDULE_SHEET_NAME =
             "Звед студ дисц розклад (дубл.)";
@@ -52,7 +53,10 @@ public class Constants {
             "Розклад занять (Прiзище та iм'я НПП, днi тижня, пара, види занять)",
             "Місце проведення", "Корпус/аудиторія, де будуть проводиться заняття"));
 
-    public static final Set<String> SCHEDULE_BY_GROUPS_HEADER =
+    public static final Set<String> SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER =
             new LinkedHashSet<>(Arrays.asList("День", "Пара", "Числ/знам"));
+
+    public static final Set<String> SCHEDULE_BY_TEACHER_HEADER =
+            new LinkedHashSet<>(Arrays.asList("Корп./ауд", "Вид заняття", "Назва файлу"));
 
 }

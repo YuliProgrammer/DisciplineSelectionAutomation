@@ -55,7 +55,7 @@ public class MainApplication {
         writeStudentsCount.writeToExcel();
 
         Writer writeConsolidationOfDisciplines = new WriteConsolidationOfDisciplines(studentsGroupedByGroup,
-                studentsGroupedByDiscipline, disciplines, schedulesGroupedByDisciplineCipher);
+                studentsGroupedByDiscipline, disciplines, schedulesGroupedByDisciplineCipher, schedulesGroupedByTeacher);
         writeConsolidationOfDisciplines.writeToExcel();
 
         System.out.println("\nКiнець роботи програми.");

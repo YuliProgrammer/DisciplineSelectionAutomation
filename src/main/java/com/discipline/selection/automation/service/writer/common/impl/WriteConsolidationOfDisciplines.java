@@ -9,6 +9,7 @@ import com.discipline.selection.automation.service.writer.common.Writer;
 import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesScheduleToNewExcelImpl;
 import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesToNewExcelImpl;
 import com.discipline.selection.automation.service.writer.created.impl.WriteScheduleByGroupsToNewExcelImpl;
+import com.discipline.selection.automation.service.writer.created.impl.WriteScheduleByTeachersToNewExcelImpl;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -38,12 +39,14 @@ public class WriteConsolidationOfDisciplines implements Writer {
     private final Map<String, List<Student>> studentsGroupedByGroup;
     private final Map<String, Discipline> disciplines;
     private final Map<String, List<Schedule>> schedule;
+    private final Map<String, List<Schedule>> schedulesGroupedByTeacher;
     private final Set<String> disciplinesWithoutSchedule = new LinkedHashSet<>();
 
     public WriteConsolidationOfDisciplines(Map<String, List<Student>> studentsGroupedByGroup,
                                            Map<String, List<Student>> studentsGroupedByDiscipline,
                                            Map<String, Discipline> disciplines,
-                                           Map<String, List<Schedule>> schedule) {
+                                           Map<String, List<Schedule>> schedule,
+                                           Map<String, List<Schedule>> schedulesGroupedByTeacher) {
         this.studentsGroupedByGroup = studentsGroupedByGroup;
         this.studentsGroupedByDiscipline =
                 StudentMapper.getStudentsGroupedByDisciplineCipherForDifferentFacilities(studentsGroupedByDiscipline);
@@ -51,6 +54,7 @@ public class WriteConsolidationOfDisciplines implements Writer {
                 .filter(entry -> this.studentsGroupedByDiscipline.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         this.schedule = schedule;
+        this.schedulesGroupedByTeacher = schedulesGroupedByTeacher;
         addMaxStudentCountForPracticeAndLaboratory(schedule, disciplines);
     }
 
@@ -97,33 +101,34 @@ public class WriteConsolidationOfDisciplines implements Writer {
             writeConsolidationOfDisciplinesScheduleToNewExcel.writeToExcel(workbook);
 
             writeToWorkbook(file, workbook);
-            System.out.println(String.format("Зведення дисциплiн було записано у новий вихiдний файл \"%s\" (Лист №1).",
-                    fileName));
-            System.out.println(
-                    String.format("Розклад студентiв було записано у новий вихiдний файл \"%s\" (Лист №2).", fileName));
-            System.out.println(
-                    String.format("Дублiкати розкладу студентiв було записано у новий вихiдний файл \"%s\" (Лист №3).",
-                            fileName));
-            System.out.println(
-                    String.format("Проблеми з перейздом було записано у новий вихiдний файл \"%s\" (Лист №4).",
-                            fileName));
+            System.out.printf("Зведення дисциплiн було записано у новий вихiдний файл \"%s\" (Лист №1).%n", fileName);
+            System.out.printf("Розклад студентiв було записано у новий вихiдний файл \"%s\" (Лист №2).%n", fileName);
+            System.out.printf("Дублiкати розкладу студентiв було записано у новий вихiдний файл \"%s\" (Лист №3).%n",
+                    fileName);
+            System.out.printf("Проблеми з перейздом було записано у новий вихiдний файл \"%s\" (Лист №4).%n", fileName);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void writeSchedule() {
-        System.out.println("\nЗапис розкладу груп...");
         WriteToExcel writeScheduleByGroups =
                 new WriteScheduleByGroupsToNewExcelImpl(studentsGroupedByGroup, disciplines, schedule);
+        WriteToExcel writeScheduleByTeachers =
+                new WriteScheduleByTeachersToNewExcelImpl(schedulesGroupedByTeacher, disciplines);
         String fileName = getFileNameForSchedule();
         File file = new File(fileName);
 
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            System.out.println("\nЗапис розкладу груп...");
             writeScheduleByGroups.writeToExcel(workbook);
+            System.out.printf("Розклад груп було записано у новий вихiдний файл \"%s\" (Лист №1).%n", fileName);
+
+            System.out.println("\nЗапис розкладу НПП...");
+            writeScheduleByTeachers.writeToExcel(workbook);
+            System.out.printf("Розклад НПП було записано у новий вихiдний файл \"%s\" (Лист №2).%n", fileName);
+
             writeToWorkbook(file, workbook);
-            System.out.println(String.format("Розклад груп було записано у новий вихiдний файл \"%s\" (Лист №1).",
-                    fileName));
         } catch (Exception e) {
             e.printStackTrace();
         }

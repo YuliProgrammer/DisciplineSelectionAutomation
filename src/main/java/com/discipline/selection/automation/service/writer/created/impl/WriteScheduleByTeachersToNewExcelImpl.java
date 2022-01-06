@@ -1,10 +1,9 @@
 package com.discipline.selection.automation.service.writer.created.impl;
 
+import com.discipline.selection.automation.ScheduleByTeachers;
 import com.discipline.selection.automation.model.Discipline;
 import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
-import com.discipline.selection.automation.model.Student;
-import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
 import com.discipline.selection.automation.service.writer.created.WriteDisciplinesToNewExcel;
@@ -25,7 +24,8 @@ import static com.discipline.selection.automation.model.enums.WeekDay.DAYS;
 import static com.discipline.selection.automation.model.enums.WeekType.EVERY_WEEK;
 import static com.discipline.selection.automation.model.enums.WeekType.WEEK_TYPES;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER;
-import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GROUPS_SHEET_NAME;
+import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_TEACHER_HEADER;
+import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_TEACHER_SHEET_NAME;
 
 /**
  * Class that creates the schedule of disciplines for students and
@@ -33,33 +33,31 @@ import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GRO
  *
  * @author Yuliia_Dolnikova
  */
-public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewExcel {
+public class WriteScheduleByTeachersToNewExcelImpl extends WriteDisciplinesToNewExcel {
 
-    private final List<String> studentsGroups;
+    private final Set<String> teacherNames = new LinkedHashSet<>();
     private int rowIndex = 2;
     private int columnIndex = 0;
     private List<String> values = new ArrayList<>();
 
-    public WriteScheduleByGroupsToNewExcelImpl(Map<String, List<Student>> studentsGroupedByGroup,
-                                               Map<String, Discipline> disciplines,
-                                               Map<String, List<Schedule>> schedules) {
-        this.students = studentsGroupedByGroup;
+    public WriteScheduleByTeachersToNewExcelImpl(Map<String, List<Schedule>> schedulesGroupedByTeacher,
+                                                 Map<String, Discipline> disciplines) {
+        this.schedules = schedulesGroupedByTeacher;
         this.disciplines = disciplines;
-        this.schedules = schedules;
-        this.studentsGroups = getStudentsGroups();
+        this.teacherNames.addAll(getTeacherNames());
     }
 
     @Override
     public void writeToExcel(XSSFWorkbook workbook) {
         initStyles(workbook);
-        XSSFSheet scheduleSheet = workbook.createSheet(SCHEDULE_BY_GROUPS_SHEET_NAME);
+        XSSFSheet scheduleSheet = workbook.createSheet(SCHEDULE_BY_TEACHER_SHEET_NAME);
         writeHeader(scheduleSheet);
         writeSchedule(scheduleSheet);
     }
 
 
     /**
-     * Void that write header for "Розклад груп".
+     * Void that write header for "Розклад НПП".
      * That header consists of two parts: the first part - it is basic header titles and
      * the second part - it is a first 2 letters of students classes.
      *
@@ -67,8 +65,12 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
      */
     private void writeHeader(XSSFSheet sheet) {
         columnIndex = writeHeader(sheet, SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER, columnIndex);
-        columnIndex = writeHeader(sheet, new LinkedHashSet<>(studentsGroups),
-                columnIndex); // write the second part of the header
+        Set<String> header = new LinkedHashSet<>();
+        teacherNames.forEach(teacherName -> {
+            header.add(teacherName);
+            header.addAll(SCHEDULE_BY_TEACHER_HEADER);
+        });
+        columnIndex = writeHeader(sheet, header, columnIndex); // write the second part of the header
     }
 
 
@@ -84,7 +86,7 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
                     values.add(day.getName());
                     values.add(String.valueOf(lessonNumber));
                     values.add(weekType.getName());
-                    values.addAll(getValuesForAllGroups(day, lessonNumber, weekType));
+                    values.addAll(getValuesForAllTeachers(day, lessonNumber, weekType));
                     writeEntry(sheet, values);
                 });
             });
@@ -93,53 +95,50 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
     }
 
     /**
-     * Method get schedules  for all groups that corresponds to current parameters
+     * Method get schedules  for all teachers that corresponds to current parameters
      *
      * @param day          - the day of week on which the discipline is to be held
      * @param lessonNumber - the lesson number on which the discipline is to be held
      * @param weekType     - the week type on which the discipline is to be held
-     * @return list of discipline ciphers. Each element - it is an enumeration of disciplines for one group
+     * @return list of discipline ciphers. Each element - it is an enumeration of disciplines for one teacher
      */
-    private List<String> getValuesForAllGroups(WeekDay day, int lessonNumber, WeekType weekType) {
-        List<String> groupDisciplines = new ArrayList<>();
-        for (String group : studentsGroups) {
-            Set<ScheduleByGroupsOrTeachers> scheduleByGroups = new HashSet<>();
-            students.get(group).forEach(student -> {
-                List<Schedule> scheduleByDisciplineForCurrentStudent =
-                        schedules.get(student.getDiscipline().getDisciplineCipher());
-                if (scheduleByDisciplineForCurrentStudent != null) {
-                    List<ScheduleByGroupsOrTeachers> schedules = filterScheduleForStudent(scheduleByDisciplineForCurrentStudent,
-                            group, day, lessonNumber, weekType);
-                    scheduleByGroups.addAll(schedules);
-                }
-            });
+    private List<String> getValuesForAllTeachers(WeekDay day, int lessonNumber, WeekType weekType) {
+        List<String> teacherDisciplines = new ArrayList<>();
+        for (String teacherName : teacherNames) {
+            List<Schedule> scheduleByCurrentTeacher = schedules.get(teacherName);
+            Set<ScheduleByGroupsOrTeachers> scheduleByTeacher =
+                    new HashSet<>(filterScheduleForTeacher(scheduleByCurrentTeacher, day, lessonNumber, weekType));
+            Set<ScheduleByTeachers> disciplineValues = getDisciplinesForAllTeachersAndOneLesson(scheduleByTeacher);
+            teacherDisciplines.add(disciplineValues.stream()
+                    .map(ScheduleByTeachers::getDisciplineCipher)
+                    .collect(Collectors.joining()));
+            teacherDisciplines.add(disciplineValues.stream()
+                    .map(ScheduleByTeachers::getFacultyAddress)
+                    .collect(Collectors.joining()));
 
-            Set<String> disciplineValues = getDisciplinesForAllGroupAndOneLesson(scheduleByGroups);
-            groupDisciplines.add(String.join("", disciplineValues));
+            // TODO
+            teacherDisciplines.add("File name");
         }
 
-        return groupDisciplines.stream().map(String::trim).collect(Collectors.toList());
+        return teacherDisciplines.stream().map(String::trim).collect(Collectors.toList());
     }
 
     /**
-     * @param scheduleByDisciplineForCurrentStudent - list of schedules for current student
-     * @param group                                 - group of current student
-     * @param day                                   - the day of week on which the discipline is to be held
-     * @param lessonNumber                          - the lesson number on which the discipline is to be held
-     * @param weekType                              - the week type on which the discipline is to be held
+     * @param scheduleByTeacher - list of schedules for current student
+     * @param day               - the day of week on which the discipline is to be held
+     * @param lessonNumber      - the lesson number on which the discipline is to be held
+     * @param weekType          - the week type on which the discipline is to be held
      * @return list of schedules for current student that that corresponds to current parameters
      */
-    private List<ScheduleByGroupsOrTeachers> filterScheduleForStudent(List<Schedule> scheduleByDisciplineForCurrentStudent,
-                                                                      String group, WeekDay day, int lessonNumber,
+    private List<ScheduleByGroupsOrTeachers> filterScheduleForTeacher(List<Schedule> scheduleByTeacher,
+                                                                      WeekDay day, int lessonNumber,
                                                                       WeekType weekType) {
-        return scheduleByDisciplineForCurrentStudent.stream()
-                .filter(schedule -> scheduleContainsGroup(schedule, group))
+        return scheduleByTeacher.stream()
                 .filter(schedule -> schedule.getDayOfWeek().equals(day))
-                .filter(schedule -> schedule.getLessonNumber()
-                        .equals(lessonNumber))
+                .filter(schedule -> schedule.getLessonNumber().equals(lessonNumber))
                 .filter(schedule -> schedule.getTypeOfWeek().equals(weekType) ||
                         (!weekType.equals(EVERY_WEEK) && schedule.getTypeOfWeek().equals(EVERY_WEEK)))
-                .map(this::generateScheduleByGroups)
+                .map(this::generateScheduleByTeacher)
                 .collect(Collectors.toList());
     }
 
@@ -153,16 +152,17 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
     }
 
     /**
-     * @param scheduleByGroups - list of schedules for current group
-     * @return set of disciplines ciphers for current group
+     * @param scheduleByTeachers - list of schedules for current teacher
+     * @return set of disciplines ciphers for current teacher
      */
-    private Set<String> getDisciplinesForAllGroupAndOneLesson(Set<ScheduleByGroupsOrTeachers> scheduleByGroups) {
-        Set<String> disciplineValues = new HashSet<>();
-        scheduleByGroups.forEach(s -> {
-            FacultyType facultyType = s.getFacultyType();
-            String faculty = facultyType != null ? "(" + facultyType.getType() + ")" : "";
-            String discipline = s.getOneDisciplineCipher() + faculty + "\n";
-            disciplineValues.add(discipline);
+    private Set<ScheduleByTeachers> getDisciplinesForAllTeachersAndOneLesson(
+            Set<ScheduleByGroupsOrTeachers> scheduleByTeachers) {
+        Set<ScheduleByTeachers> disciplineValues = new HashSet<>();
+        scheduleByTeachers.forEach(schedule -> {
+            disciplineValues.add(ScheduleByTeachers.builder()
+                    .disciplineCipher(schedule.getOneDisciplineCipher() + "\n")
+                    .facultyAddress(schedule.getFacultyAddress() + "\n")
+                    .build());
         });
         return disciplineValues;
     }
@@ -178,13 +178,13 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteDisciplinesToNewEx
     }
 
     /**
-     * @return list of unique first 2 letters of students groups
+     * @return list of unique teacher names
      */
-    private List<String> getStudentsGroups() {
-        return students.keySet().stream().sorted().collect(Collectors.toList());
+    private List<String> getTeacherNames() {
+        return schedules.keySet().stream().sorted().collect(Collectors.toList());
     }
 
-    private ScheduleByGroupsOrTeachers generateScheduleByGroups(Schedule schedule) {
+    private ScheduleByGroupsOrTeachers generateScheduleByTeacher(Schedule schedule) {
         return ScheduleByGroupsOrTeachers.builder()
                 .oneDisciplineCipher(schedule.getDisciplineCipher())
                 .facultyType(schedule.getFacultyType())
