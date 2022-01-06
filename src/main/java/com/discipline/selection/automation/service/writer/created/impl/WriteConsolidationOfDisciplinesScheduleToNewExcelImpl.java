@@ -85,8 +85,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         writeSchedule(farScheduleSheet, farFacultiesSchedule);
 
         if (!disciplinesWithoutSchedule.isEmpty()) {
-            System.out.println(String.format("\nВ файлi \"%s\" немає розкладу для дисциплiн [%s].\n",
-                    FILE_NAMES.get(1), String.join(COMA, disciplinesWithoutSchedule)));
+            System.out.printf("\nВ файлi \"%s\" немає розкладу для дисциплiн [%s].\n%n",
+                    FILE_NAMES.get(1), String.join(COMA, disciplinesWithoutSchedule));
         }
     }
 

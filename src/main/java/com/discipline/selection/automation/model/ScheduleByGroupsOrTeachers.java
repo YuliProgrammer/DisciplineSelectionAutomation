@@ -22,10 +22,11 @@ import java.util.List;
 @AllArgsConstructor
 @ToString(of = {"oneDisciplineCipher", "dayOfWeek", "lessonNumber"})
 @EqualsAndHashCode(of = {"oneDisciplineCipher"})
-public class ScheduleByGroups {
+public class ScheduleByGroupsOrTeachers {
 
     private String oneDisciplineCipher;
     private FacultyType facultyType;
+    private String facultyAddress;
     private WeekDay dayOfWeek;                  // should be stored in column by index 0
     private Integer lessonNumber;              // should be stored in column by index 1
     private WeekType typeOfWeek;               // should be stored in column by index 2

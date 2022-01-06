@@ -41,19 +41,17 @@ public class Dialog {
     private static void checkIfFileExists(String fileName) {
         File file = new File(fileName);
         if (!file.exists()) {
-            System.out.println(String.format(
-                    "Файл з iм'ям \"%s\" не знайднено. " +
-                            "Будь ласка, перевiрте правильнiсть iменi файлу (воно обов'язково має включати повний шлях до файлу).",
-                    fileName));
+            System.out.printf("Файл з iм'ям \"%s\" не знайднено. " +
+                            "Будь ласка, перевiрте правильнiсть iменi файлу (воно обов'язково має включати повний шлях до файлу).%n",
+                    fileName);
             throw new InvalidDataException(String.format("Файл з iм'ям \"" + fileName + "\" не знайднено.", fileName));
         }
     }
 
     private static void checkFileFormat(String fileName) {
         if (fileName.endsWith(XLS_FILE_FORMAT)) {
-            System.out.println(String.format(
-                    "Файл з iм'ям \"%s\" має невiрний формат \"%s\". Допустимий формат файлу \"%s\".",
-                    fileName, XLS_FILE_FORMAT, XLSX_FILE_FORMAT));
+            System.out.printf("Файл з iм'ям \"%s\" має невiрний формат \"%s\". Допустимий формат файлу \"%s\".%n",
+                    fileName, XLS_FILE_FORMAT, XLSX_FILE_FORMAT);
             throw new InvalidDataException(
                     String.format("Файл з iм'ям \"%s\" має невiрний формат \"%s\".", fileName, XLS_FILE_FORMAT));
         }
