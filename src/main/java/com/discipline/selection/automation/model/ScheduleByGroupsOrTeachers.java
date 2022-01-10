@@ -31,6 +31,7 @@ public class ScheduleByGroupsOrTeachers {
     private Integer lessonNumber;              // should be stored in column by index 1
     private WeekType typeOfWeek;               // should be stored in column by index 2
     private List<String> disciplineCiphers;    // should be stored in column by index 3
+    private List<String> groupCodes = new ArrayList<>(); // should be stored in column by index 1
 
     public List<String> getValuesForScheduleByGroups() {
         List<String> valuesForScheduleByGroups = new ArrayList<>();
