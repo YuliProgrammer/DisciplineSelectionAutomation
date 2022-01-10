@@ -1,6 +1,7 @@
 package com.discipline.selection.automation.model;
 
 import com.discipline.selection.automation.model.enums.FacultyType;
+import com.discipline.selection.automation.model.enums.LessonType;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
 import lombok.AllArgsConstructor;
@@ -27,11 +28,11 @@ public class ScheduleByGroupsOrTeachers {
     private String oneDisciplineCipher;
     private FacultyType facultyType;
     private String facultyAddress;
-    private WeekDay dayOfWeek;                  // should be stored in column by index 0
-    private Integer lessonNumber;              // should be stored in column by index 1
-    private WeekType typeOfWeek;               // should be stored in column by index 2
-    private List<String> disciplineCiphers;    // should be stored in column by index 3
-    private List<String> groupCodes = new ArrayList<>(); // should be stored in column by index 1
+    private WeekDay dayOfWeek;
+    private Integer lessonNumber;
+    private LessonType lessonType;
+    private WeekType typeOfWeek;
+    private List<String> groupCodes = new ArrayList<>();
 
     public List<String> getValuesForScheduleByGroups() {
         List<String> valuesForScheduleByGroups = new ArrayList<>();

@@ -28,13 +28,13 @@ import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GRO
  *
  * @author Yuliia_Dolnikova
  */
-public class WriteScheduleByGroupsGroupsOrTeachersToNewExcelImpl extends WriteScheduleByGroupsOrTeachersToExcel {
+public class WriteScheduleByGroupsToNewExcelImpl extends WriteScheduleByGroupsOrTeachersToExcel {
 
     private final Set<String> studentsGroups = new LinkedHashSet<>();
 
-    public WriteScheduleByGroupsGroupsOrTeachersToNewExcelImpl(Map<String, List<Student>> studentsGroupedByGroup,
-                                                               Map<String, Discipline> disciplines,
-                                                               Map<String, List<Schedule>> schedules) {
+    public WriteScheduleByGroupsToNewExcelImpl(Map<String, List<Student>> studentsGroupedByGroup,
+                                               Map<String, Discipline> disciplines,
+                                               Map<String, List<Schedule>> schedules) {
         this.students = studentsGroupedByGroup;
         this.disciplines = disciplines;
         this.schedules = schedules;

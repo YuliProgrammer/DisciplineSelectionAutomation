@@ -8,8 +8,8 @@ import com.discipline.selection.automation.service.WriteToExcel;
 import com.discipline.selection.automation.service.writer.common.Writer;
 import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesScheduleToNewExcelImpl;
 import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesToNewExcelImpl;
-import com.discipline.selection.automation.service.writer.created.impl.WriteScheduleByGroupsGroupsOrTeachersToNewExcelImpl;
-import com.discipline.selection.automation.service.writer.created.impl.WriteScheduleByTeachersGroupsOrTeachersToNewExcelImpl;
+import com.discipline.selection.automation.service.writer.created.impl.WriteScheduleByGroupsToNewExcelImpl;
+import com.discipline.selection.automation.service.writer.created.impl.WriteScheduleByTeachersToNewExcelImpl;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -113,9 +113,9 @@ public class WriteConsolidationOfDisciplines implements Writer {
 
     private void writeSchedule() {
         WriteToExcel writeScheduleByGroups =
-                new WriteScheduleByGroupsGroupsOrTeachersToNewExcelImpl(studentsGroupedByGroup, disciplines, schedule);
+                new WriteScheduleByGroupsToNewExcelImpl(studentsGroupedByGroup, disciplines, schedule);
         WriteToExcel writeScheduleByTeachers =
-                new WriteScheduleByTeachersGroupsOrTeachersToNewExcelImpl(schedulesGroupedByTeacher, disciplines);
+                new WriteScheduleByTeachersToNewExcelImpl(schedulesGroupedByTeacher, disciplines);
         String fileName = getFileNameForSchedule();
         File file = new File(fileName);
 
