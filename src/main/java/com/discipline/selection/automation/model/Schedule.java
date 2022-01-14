@@ -23,7 +23,7 @@ import static com.discipline.selection.automation.util.Constants.BLANK_LINE;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"typeOfWeek", "lessonNumber", "dayOfWeek", "lessonType", "disciplineCipher", "groupCodes",
-        "groupNumber"})
+        "groupNumber", "fileName"})
 public class Schedule {
 
     private String disciplineCipher;   // should be stored in column by index 0
@@ -39,6 +39,7 @@ public class Schedule {
     private String groupNumber;       // should be stored in column by index 9
     private FacultyType facultyType;  // should be stored in column by index 10
     private String facultyAddress;    // should be stored in column by index 11
+    private String fileName;          // name of file where info was stored
 
     public Schedule(Schedule schedule) {
         this.disciplineCipher = schedule.disciplineCipher;
@@ -53,6 +54,7 @@ public class Schedule {
         this.groupNumber = schedule.groupNumber;
         this.facultyType = schedule.facultyType;
         this.facultyAddress = schedule.facultyAddress;
+        this.fileName = schedule.fileName;
     }
 
     public String scheduleForConsolidationOfDisciplines() {

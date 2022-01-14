@@ -77,6 +77,7 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
                 .lessonNumber(schedule.getLessonNumber())
                 .lessonType(schedule.getLessonType())
                 .typeOfWeek(schedule.getTypeOfWeek())
+                .fileName(schedule.getFileName())
                 .groupCodes(schedule.getGroupCodes())
                 .build();
     }

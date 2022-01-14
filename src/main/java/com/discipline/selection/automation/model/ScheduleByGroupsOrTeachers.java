@@ -32,6 +32,7 @@ public class ScheduleByGroupsOrTeachers {
     private Integer lessonNumber;
     private LessonType lessonType;
     private WeekType typeOfWeek;
+    private String fileName;
     private List<String> groupCodes = new ArrayList<>();
 
     public List<String> getValuesForScheduleByGroups() {

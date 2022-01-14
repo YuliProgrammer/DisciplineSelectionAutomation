@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.discipline.selection.automation.MainApplication.FILE_NAMES;
+import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.model.enums.LessonType.LABORATORY;
 import static com.discipline.selection.automation.model.enums.LessonType.LECTURE;
 import static com.discipline.selection.automation.model.enums.LessonType.PRACTICE;
@@ -85,8 +85,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         writeSchedule(farScheduleSheet, farFacultiesSchedule);
 
         if (!disciplinesWithoutSchedule.isEmpty()) {
-            System.out.printf("\nВ файлi \"%s\" немає розкладу для дисциплiн [%s].\n%n",
-                    FILE_NAMES.get(1), String.join(COMA, disciplinesWithoutSchedule));
+            System.out.printf("\nВ файлi \"%s\" немає розкладу для дисциплiн [%s].\n%n", FILE_NAME,
+                    String.join(COMA, disciplinesWithoutSchedule));
         }
     }
 

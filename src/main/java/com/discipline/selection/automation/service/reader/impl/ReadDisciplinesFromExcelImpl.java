@@ -1,9 +1,8 @@
 package com.discipline.selection.automation.service.reader.impl;
 
-import static com.discipline.selection.automation.MainApplication.FILE_NAMES;
+import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINES_SHEET_INDEX;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -22,10 +21,9 @@ public class ReadDisciplinesFromExcelImpl implements ReadFromExcel<String, Disci
 
     @Override
     public Map<String, Discipline> uploadData() {
-        try (FileInputStream file = new FileInputStream(new File(FILE_NAMES.get(0)))) {
+        try (FileInputStream file = new FileInputStream(FILE_NAME)) {
             Workbook workbook = new XSSFWorkbook(file);
-            Map<String, Discipline> disciplines = getDisciplines(workbook);
-            return disciplines;
+            return getDisciplines(workbook);
         } catch (IOException e) {
             e.printStackTrace();
         }

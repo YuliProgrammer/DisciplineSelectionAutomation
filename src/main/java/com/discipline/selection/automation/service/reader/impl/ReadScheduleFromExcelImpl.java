@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.discipline.selection.automation.MainApplication.FILE_NAMES;
+import static com.discipline.selection.automation.MainApplication.SCHEDULE_FILE_NAMES;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINE;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_SHEET_INDEX;
 import static com.discipline.selection.automation.util.Constants.TEACHER;
@@ -28,21 +28,29 @@ public class ReadScheduleFromExcelImpl implements ReadFromExcel<String, Map<Stri
 
     @Override
     public Map<String, Map<String, List<Schedule>>> uploadData() {
-        FILE_NAME = FILE_NAMES.get(1);
+        Map<String, Map<String, List<Schedule>>> groupedSchedulesMap = new HashMap<>();
 
-        try (FileInputStream file = new FileInputStream(FILE_NAME)) {
-            Workbook workbook = new XSSFWorkbook(file);
+        for (String scheduleFiles : SCHEDULE_FILE_NAMES) {
+            FILE_NAME = scheduleFiles;
+            try (FileInputStream file = new FileInputStream(FILE_NAME)) {
+                Workbook workbook = new XSSFWorkbook(file);
+                GroupedSchedule groupedSchedule = getSchedule(workbook);
 
-            GroupedSchedule groupedSchedule = getSchedule(workbook);
-            Map<String, Map<String, List<Schedule>>> groupedSchedulesMap = new HashMap<>();
-            groupedSchedulesMap.put(DISCIPLINE, groupedSchedule.getSchedulesGroupedByDisciplineCipher());
-            groupedSchedulesMap.put(TEACHER, groupedSchedule.getSchedulesGroupedByTeacher());
+                Map<String, List<Schedule>> disciplineMap = groupedSchedulesMap.containsKey(DISCIPLINE) ?
+                        groupedSchedulesMap.get(DISCIPLINE) : new HashMap<>();
+                Map<String, List<Schedule>> teacherMap = groupedSchedulesMap.containsKey(TEACHER) ?
+                        groupedSchedulesMap.get(TEACHER) : new HashMap<>();
 
-            return groupedSchedulesMap;
-        } catch (IOException e) {
-            e.printStackTrace();
+                disciplineMap.putAll(groupedSchedule.getSchedulesGroupedByDisciplineCipher());
+                teacherMap.putAll(groupedSchedule.getSchedulesGroupedByTeacher());
+
+                groupedSchedulesMap.put(DISCIPLINE, disciplineMap);
+                groupedSchedulesMap.put(TEACHER, teacherMap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
+        return groupedSchedulesMap;
     }
 
     /**

@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.discipline.selection.automation.MainApplication.FILE_NAMES;
+import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINE;
 import static com.discipline.selection.automation.util.Constants.GROUP;
 import static com.discipline.selection.automation.util.Constants.STUDENTS_SHEET_INDEX;
@@ -27,7 +27,7 @@ public class ReadStudentsFromExcelImpl implements ReadFromExcel<String, Map<Stri
 
     @Override
     public Map<String, Map<String, List<Student>>> uploadData() {
-        try (FileInputStream file = new FileInputStream(new File(FILE_NAMES.get(0)))) {
+        try (FileInputStream file = new FileInputStream(FILE_NAME)) {
             Workbook workbook = new XSSFWorkbook(file);
 
             GroupedStudents groupedStudents = getStudentsGroupedByDisciplineCipher(workbook);

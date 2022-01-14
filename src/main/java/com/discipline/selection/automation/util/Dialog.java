@@ -14,28 +14,49 @@ import static com.discipline.selection.automation.util.Constants.XLS_FILE_FORMAT
 @UtilityClass
 public class Dialog {
 
-    public static List<String> dialog() throws InvalidDataException {
+    public static String dialog(List<String> scheduleFileNames) throws InvalidDataException {
         Scanner scanner = new Scanner(System.in);
 
-        List<String> fileNames = new ArrayList<>();
-        fileNames.add(getFileNameDialog(scanner,
-                "Введiть iм'я файлу, який мiстить 2 листа: список обраних та назви обраних дисциплiн: "));
-        fileNames.add(getFileNameDialog(scanner, "Введiть iм'я файлу, який мiстить розклад викладачiв: "));
+        String fileName = getFileNameDialog(scanner,
+                "Введiть iм'я файлу, який мiстить 2 листа: список обраних та назви обраних дисциплiн: ");
 
-        return fileNames;
+        int fileCount = getFileCountsForSchedule(scanner);
+        String scheduleFileName;
+        for (int i = 0; i < fileCount; i++) {
+            scheduleFileName = getFileNameDialog(scanner,
+                    String.format("Введiть iм'я %d файлу, який мiстить розклад викладачiв: ", i + 1));
+            while(scheduleFileNames.contains(scheduleFileName)){
+                System.out.println("Ви вже ввели це ім'я файлу.");
+                scheduleFileName = getFileNameDialog(scanner,
+                        String.format("Введiть iм'я %d файлу, який мiстить розклад викладачiв: ", i + 1));
+            }
+            scheduleFileNames.add(scheduleFileName);
+        }
+        return fileName;
     }
 
     private static String getFileNameDialog(Scanner scanner, String message) {
         System.out.print(message);
         String fileName = scanner.nextLine().trim();
         if (fileName.isEmpty()) {
-            System.out.println("iм'я файлу не може бути порожнiм.");
-            throw new InvalidDataException("iм'я файлу не може бути порожнiм.");
+            System.out.println("Ім'я файлу не може бути порожнiм.");
+            throw new InvalidDataException("Ім'я файлу не може бути порожнiм.");
         }
 
         checkFileFormat(fileName);
         checkIfFileExists(fileName);
         return fileName;
+    }
+
+    private static int getFileCountsForSchedule(Scanner scanner) {
+        int fileCount;
+        System.out.print("Із сколькома файлами розкладів плануєте працювати? ");
+
+        do {
+            fileCount = scanner.nextInt();
+            scanner.nextLine();
+        } while (fileCount < 0);
+        return fileCount;
     }
 
     private static void checkIfFileExists(String fileName) {

@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +58,7 @@ public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
      * @param columnIndex - the index of the first column from which the headers should be written
      * @return index of last column that contains title
      */
-    protected int writeHeader(XSSFSheet sheet, Set<String> titles, int columnIndex) {
+    protected int writeHeader(XSSFSheet sheet, Collection<String> titles, int columnIndex) {
         Cell stringFirstTitleCell;
         Cell columnIndexSecondTitleCell;
 

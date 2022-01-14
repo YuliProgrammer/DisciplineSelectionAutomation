@@ -50,6 +50,8 @@ public class ScheduleMapper {
 
         for (Map.Entry<Integer, String> entry : rowData.entrySet()) {
             String value = entry.getValue().trim();
+            schedule.setFileName(fileName);
+
             switch (entry.getKey()) {
                 case 0:
                     schedule.setDisciplineCipher(value);

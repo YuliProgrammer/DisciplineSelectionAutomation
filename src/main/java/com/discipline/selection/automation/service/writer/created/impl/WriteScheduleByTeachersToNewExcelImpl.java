@@ -56,7 +56,7 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
      */
     private void writeHeader(XSSFSheet sheet) {
         columnIndex = writeHeader(sheet, SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER, columnIndex);
-        Set<String> header = new LinkedHashSet<>();
+        List<String> header = new ArrayList<>();
         teacherNames.forEach(teacherName -> {
             header.add(teacherName);
             header.addAll(SCHEDULE_BY_TEACHER_HEADER);
@@ -96,8 +96,7 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
                     .disciplineCipher(schedule.getOneDisciplineCipher())
                     .facultyAddress(schedule.getFacultyAddress())
                     .lessonType(schedule.getLessonType())
-                    // TODO
-                    .fileName("FILE NAME")
+                    .fileName(schedule.getFileName())
                     .build());
         });
 

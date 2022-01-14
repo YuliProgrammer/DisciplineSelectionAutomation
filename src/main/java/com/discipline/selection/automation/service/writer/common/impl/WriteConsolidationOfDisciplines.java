@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.discipline.selection.automation.MainApplication.FILE_NAMES;
+import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.model.enums.LessonType.LABORATORY;
 import static com.discipline.selection.automation.model.enums.LessonType.PRACTICE;
 import static com.discipline.selection.automation.util.Constants.OUTPUT_FILE_NAME;
@@ -154,7 +154,7 @@ public class WriteConsolidationOfDisciplines implements Writer {
 
     private String getFileName() {
         String separator = File.separator;
-        String inputFileName = FILE_NAMES.get(0);
+        String inputFileName = FILE_NAME;
         int indexOfLastSlash = inputFileName.contains(separator) ? inputFileName.lastIndexOf(separator) + 1 : 0;
 
         String outputPath = inputFileName.substring(0, indexOfLastSlash);

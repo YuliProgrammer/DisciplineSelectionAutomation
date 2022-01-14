@@ -11,14 +11,14 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.discipline.selection.automation.MainApplication.FILE_NAMES;
+import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINES_SHEET_INDEX;
 
 public class ReadDisciplinesHeaderFromExcelImpl implements ReadFromExcel<Integer, String> {
 
     @Override
     public Map<Integer, String> uploadData() {
-        try (FileInputStream file = new FileInputStream(new File(FILE_NAMES.get(0)))) {
+        try (FileInputStream file = new FileInputStream(FILE_NAME)) {
             Workbook workbook = new XSSFWorkbook(file);
             return getDisciplinesHeader(workbook);
         } catch (IOException e) {

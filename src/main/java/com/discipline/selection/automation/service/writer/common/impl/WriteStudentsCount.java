@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static com.discipline.selection.automation.MainApplication.FILE_NAMES;
+import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.util.Constants.CHOSEN_DISCIPLINES_FOR_DIFFERENT_FACILITIES_SHEET_NAME;
 
 /**
@@ -36,7 +36,7 @@ public class WriteStudentsCount implements Writer {
     }
 
     public void writeToExcel() {
-        String fileName = FILE_NAMES.get(0);
+        String fileName = FILE_NAME;
         File file = new File(fileName);
 
         WriteToExcel writeStudentsCount = new WriteStudentsCountToExistedExcelSheetImpl(students, disciplines);

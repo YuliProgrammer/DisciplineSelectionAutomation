@@ -13,6 +13,7 @@ import com.discipline.selection.automation.service.writer.common.impl.WriteConso
 import com.discipline.selection.automation.service.writer.common.impl.WriteStudentsCount;
 import com.discipline.selection.automation.util.Dialog;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,11 +30,12 @@ public class MainApplication {
     private final static ReadFromExcel<String, Map<String, List<Schedule>>> readScheduleFromExcel =
             new ReadScheduleFromExcelImpl();
 
-    public static List<String> FILE_NAMES;
+    public static String FILE_NAME;
+    public static List<String> SCHEDULE_FILE_NAMES = new ArrayList<>();
 
     public static void main(String... args) {
         try {
-            FILE_NAMES = Dialog.dialog();
+            FILE_NAME = Dialog.dialog(SCHEDULE_FILE_NAMES);
         } catch (InvalidDataException e) {
             return;
         }
@@ -55,7 +57,8 @@ public class MainApplication {
         writeStudentsCount.writeToExcel();
 
         Writer writeConsolidationOfDisciplines = new WriteConsolidationOfDisciplines(studentsGroupedByGroup,
-                studentsGroupedByDiscipline, disciplines, schedulesGroupedByDisciplineCipher, schedulesGroupedByTeacher);
+                studentsGroupedByDiscipline, disciplines, schedulesGroupedByDisciplineCipher,
+                schedulesGroupedByTeacher);
         writeConsolidationOfDisciplines.writeToExcel();
 
         System.out.println("\nКiнець роботи програми.");
@@ -63,4 +66,5 @@ public class MainApplication {
 
     // D:\University\Cursah\New\test\VERY_NEW\2021 vxid bak 10_2021.xlsx
     // D:\University\Cursah\New\test\VERY_NEW\2021_Rozklad bak 2sem (2).xlsx
+    // D:\University\Cursah\New\test\VERY_NEW\2021_Rozklad bak 2sem.xlsx
 }
