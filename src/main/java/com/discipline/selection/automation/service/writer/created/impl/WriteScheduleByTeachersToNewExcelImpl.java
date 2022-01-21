@@ -32,10 +32,8 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
 
     private final Set<String> teacherNames = new LinkedHashSet<>();
 
-    public WriteScheduleByTeachersToNewExcelImpl(Map<String, List<Schedule>> schedulesGroupedByTeacher,
-                                                 Map<String, Discipline> disciplines) {
+    public WriteScheduleByTeachersToNewExcelImpl(Map<String, List<Schedule>> schedulesGroupedByTeacher) {
         this.schedules = schedulesGroupedByTeacher;
-        this.disciplines = disciplines;
         this.teacherNames.addAll(getTeacherNames());
     }
 
