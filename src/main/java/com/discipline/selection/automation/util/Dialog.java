@@ -50,12 +50,11 @@ public class Dialog {
 
     private static int getFileCountsForSchedule(Scanner scanner) {
         int fileCount;
-        System.out.print("Із сколькома файлами розкладів плануєте працювати? ");
-
         do {
+            System.out.print("Із сколькома файлами розкладів плануєте працювати (має бути додатнє число)? ");
             fileCount = scanner.nextInt();
             scanner.nextLine();
-        } while (fileCount < 0);
+        } while (fileCount <= 0);
         return fileCount;
     }
 

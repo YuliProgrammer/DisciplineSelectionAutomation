@@ -1,6 +1,5 @@
 package com.discipline.selection.automation.service.writer.created.impl;
 
-import com.discipline.selection.automation.model.Discipline;
 import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
 import com.discipline.selection.automation.model.ScheduleByTeachers;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_TEACHER_HEADER;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_TEACHER_SHEET_NAME;
+import static com.discipline.selection.automation.util.Constants.SEMICOLON;
 
 /**
  * Class that creates the schedule of disciplines for students and
@@ -78,7 +78,6 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
                     new HashSet<>(filterSchedule(scheduleByCurrentTeacher, day, lessonNumber, weekType));
             teacherDisciplines.addAll(getDisciplinesForAllTeachersAndOneLesson(scheduleByTeacher));
         }
-
         return teacherDisciplines.stream().map(String::trim).collect(Collectors.toList());
     }
 
@@ -89,28 +88,28 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
     private List<String> getDisciplinesForAllTeachersAndOneLesson(
             Set<ScheduleByGroupsOrTeachers> scheduleByTeachers) {
         Set<ScheduleByTeachers> disciplineValues = new HashSet<>();
-        scheduleByTeachers.forEach(schedule -> {
-            disciplineValues.add(ScheduleByTeachers.builder()
-                    .disciplineCipher(schedule.getOneDisciplineCipher())
-                    .facultyAddress(schedule.getFacultyAddress())
-                    .lessonType(schedule.getLessonType())
-                    .fileName(schedule.getFileName())
-                    .build());
-        });
+        scheduleByTeachers.forEach(schedule ->
+                disciplineValues.add(ScheduleByTeachers.builder()
+                        .disciplineCipher(schedule.getOneDisciplineCipher())
+                        .facultyAddress(schedule.getFacultyAddress())
+                        .lessonType(schedule.getLessonType())
+                        .fileName(schedule.getFileName())
+                        .build())
+        );
 
         List<String> teacherDisciplines = new ArrayList<>();
         teacherDisciplines.add(disciplineValues.stream()
                 .map(ScheduleByTeachers::getDisciplineCipher)
-                .collect(Collectors.joining()));
+                .collect(Collectors.joining(SEMICOLON)));
         teacherDisciplines.add(disciplineValues.stream()
                 .map(ScheduleByTeachers::getFacultyAddress)
-                .collect(Collectors.joining()));
+                .collect(Collectors.joining(SEMICOLON)));
         teacherDisciplines.add(disciplineValues.stream()
                 .map(scheduleByTeacher -> scheduleByTeacher.getLessonType().getName())
-                .collect(Collectors.joining()));
+                .collect(Collectors.joining(SEMICOLON)));
         teacherDisciplines.add(disciplineValues.stream()
                 .map(ScheduleByTeachers::getFileName)
-                .collect(Collectors.joining()));
+                .collect(Collectors.joining(SEMICOLON)));
         return teacherDisciplines;
     }
 

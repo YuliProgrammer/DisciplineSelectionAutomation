@@ -29,6 +29,8 @@ public class ReadScheduleFromExcelImpl implements ReadFromExcel<String, Map<Stri
     @Override
     public Map<String, Map<String, List<Schedule>>> uploadData() {
         Map<String, Map<String, List<Schedule>>> groupedSchedulesMap = new HashMap<>();
+        Map<String, List<Schedule>> disciplineMap;
+        Map<String, List<Schedule>> teacherMap;
 
         for (String scheduleFiles : SCHEDULE_FILE_NAMES) {
             FILE_NAME = scheduleFiles;
@@ -36,13 +38,17 @@ public class ReadScheduleFromExcelImpl implements ReadFromExcel<String, Map<Stri
                 Workbook workbook = new XSSFWorkbook(file);
                 GroupedSchedule groupedSchedule = getSchedule(workbook);
 
-                Map<String, List<Schedule>> disciplineMap = groupedSchedulesMap.containsKey(DISCIPLINE) ?
+                disciplineMap = groupedSchedulesMap.containsKey(DISCIPLINE) ?
                         groupedSchedulesMap.get(DISCIPLINE) : new HashMap<>();
-                Map<String, List<Schedule>> teacherMap = groupedSchedulesMap.containsKey(TEACHER) ?
+                teacherMap = groupedSchedulesMap.containsKey(TEACHER) ?
                         groupedSchedulesMap.get(TEACHER) : new HashMap<>();
 
                 disciplineMap.putAll(groupedSchedule.getSchedulesGroupedByDisciplineCipher());
-                teacherMap.putAll(groupedSchedule.getSchedulesGroupedByTeacher());
+
+                Map<String, List<Schedule>> schedulesGroupedByTeacher = groupedSchedule.getSchedulesGroupedByTeacher();
+                for (Map.Entry<String, List<Schedule>> entry : schedulesGroupedByTeacher.entrySet()) {
+                    setScheduleByKey(teacherMap, entry.getKey(), entry.getValue());
+                }
 
                 groupedSchedulesMap.put(DISCIPLINE, disciplineMap);
                 groupedSchedulesMap.put(TEACHER, teacherMap);

@@ -105,7 +105,7 @@ public class WriteConsolidationOfDisciplines implements Writer {
             System.out.printf("Розклад студентiв було записано у новий вихiдний файл \"%s\" (Лист №2).%n", fileName);
             System.out.printf("Дублiкати розкладу студентiв було записано у новий вихiдний файл \"%s\" (Лист №3).%n",
                     fileName);
-            System.out.printf("Проблеми з перейздом було записано у новий вихiдний файл \"%s\" (Лист №4).%n", fileName);
+            System.out.printf("Проблеми з переїздом було записано у новий вихiдний файл \"%s\" (Лист №4).%n", fileName);
         } catch (Exception e) {
             e.printStackTrace();
         }

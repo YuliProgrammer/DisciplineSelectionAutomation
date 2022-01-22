@@ -30,15 +30,15 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
      */
     protected void writeSchedule(XSSFSheet sheet) {
         Arrays.stream(DAYS).forEach(day -> {
-            IntStream.range(1, 8).forEach(lessonNumber -> {
-                Arrays.stream(WEEK_TYPES).forEach(weekType -> {
-                    values.add(day.getName());
-                    values.add(String.valueOf(lessonNumber));
-                    values.add(weekType.getName());
-                    values.addAll(getValuesForAll(day, lessonNumber, weekType));
-                    writeEntry(sheet, values);
-                });
-            });
+            IntStream.range(1, 8).forEach(lessonNumber ->
+                    Arrays.stream(WEEK_TYPES).forEach(weekType -> {
+                        values.add(day.getName());
+                        values.add(String.valueOf(lessonNumber));
+                        values.add(weekType.getName());
+                        values.addAll(getValuesForAll(day, lessonNumber, weekType));
+                        writeEntry(sheet, values);
+                    })
+            );
             writeEmptyLine(sheet);
         });
     }
@@ -83,7 +83,7 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
     }
 
     private void writeEntry(XSSFSheet sheet, List<String> values) {
-        writeEntry(sheet, setForeground(rowIndex), values, rowIndex);
+        writeEntry(sheet, setForeground(rowIndex), values, rowIndex, duplicatedCellStyle);
         rowIndex += 1;
         this.values.clear();
     }

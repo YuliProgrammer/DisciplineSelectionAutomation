@@ -15,7 +15,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Class that contains a basic logic for writing data into new Excel file
@@ -81,7 +80,8 @@ public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
 
             if (title.contains("НПП") || title.contains("Назва") || title.contains("iм'я")) {
                 sheet.setColumnWidth(columnIndex, 45 * 256);
-            } else if (title.contains("Шифр") || title.contains("дублiкат") || title.matches(".*-.*-.*")) {
+            } else if (title.contains("Шифр") || title.contains("дублiкат") || title.matches(".*-.*-.*")
+                    || title.matches(".*\\.[а-яА-Я]{1}\\.")) {
                 sheet.setColumnWidth(columnIndex, 15 * 256);
             } else {
                 sheet.setColumnWidth(columnIndex, 9 * 256);

@@ -10,6 +10,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.List;
 
+import static com.discipline.selection.automation.util.Constants.SEMICOLON;
+
 /**
  * Interface that can write data to Excel file
  *
@@ -27,7 +29,8 @@ public interface WriteToExcel {
      * @param values    - the values of current entry fields
      * @param rowIndex  - index of new row
      */
-    default void writeEntry(XSSFSheet sheet, CellStyle cellStyle, List<String> values, int rowIndex) {
+    default void writeEntry(XSSFSheet sheet, CellStyle cellStyle, List<String> values, int rowIndex,
+                            CellStyle... uniqueCellStyle) {
         Cell cell;
         int columnIndex = 0;
         XSSFRow row = sheet.createRow(rowIndex);
@@ -41,7 +44,11 @@ public interface WriteToExcel {
                 cell.setCellValue(intValue);
             }
 
-            cell.setCellStyle(cellStyle);
+            if (uniqueCellStyle != null && uniqueCellStyle.length > 0 && value != null && value.contains(SEMICOLON)) {
+                cell.setCellStyle(uniqueCellStyle[0]);
+            } else {
+                cell.setCellStyle(cellStyle);
+            }
         }
     }
 
