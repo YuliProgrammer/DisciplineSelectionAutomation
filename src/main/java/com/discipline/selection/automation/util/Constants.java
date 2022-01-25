@@ -34,6 +34,8 @@ public class Constants {
     public static final String CONSOLIDATION_OF_DISCIPLINES_SHEET_NAME = "Зведення дисц шифр спец";
     public static final String SCHEDULE_BY_GROUPS_SHEET_NAME = "Розклад груп";
     public static final String SCHEDULE_BY_TEACHER_SHEET_NAME = "Розклад НПП";
+    public static final String SCHEDULE_PROBLEMS_BY_TEACHER_SHEET_NAME = "Розклад НПП (Проблеми)";
+
     public static final String CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_SHEET_NAME = "Звед студ дисципл розклад ";
     public static final String CONSOLIDATION_OF_DISCIPLINES_DUPLICATED_SCHEDULE_SHEET_NAME =
             "Звед студ дисц розклад (дубл.)";
