@@ -5,6 +5,7 @@ import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
 import com.discipline.selection.automation.service.writer.created.WriteDisciplinesToNewExcel;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
      *
      * @param sheet - current sheet
      */
-    protected void writeSchedule(XSSFSheet sheet) {
+    protected void writeSchedule(XSSFSheet sheet, CellStyle... duplicatedCellStyle) {
         Arrays.stream(DAYS).forEach(day -> {
             IntStream.range(1, 8).forEach(lessonNumber ->
                     Arrays.stream(WEEK_TYPES).forEach(weekType -> {
@@ -36,7 +37,7 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
                         values.add(String.valueOf(lessonNumber));
                         values.add(weekType.getName());
                         values.addAll(getValuesForAll(day, lessonNumber, weekType));
-                        writeEntry(sheet, values);
+                        writeEntry(sheet, values, duplicatedCellStyle);
                     })
             );
             writeEmptyLine(sheet);
@@ -82,7 +83,7 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
                 .build();
     }
 
-    private void writeEntry(XSSFSheet sheet, List<String> values) {
+    private void writeEntry(XSSFSheet sheet, List<String> values,    CellStyle... duplicatedCellStyle) {
         writeEntry(sheet, setForeground(rowIndex), values, rowIndex, duplicatedCellStyle);
         rowIndex += 1;
         this.values.clear();

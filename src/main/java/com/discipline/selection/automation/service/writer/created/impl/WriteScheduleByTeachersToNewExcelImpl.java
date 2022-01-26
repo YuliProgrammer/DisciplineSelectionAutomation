@@ -5,6 +5,7 @@ import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
 import com.discipline.selection.automation.service.writer.WriteScheduleByGroupsOrTeachersToExcel;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -49,7 +50,7 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
     @Override
     public void writeToExcel(XSSFWorkbook workbook) {
         initStyles(workbook);
-        writeTeachersSchedule(workbook, SCHEDULE_BY_TEACHER_SHEET_NAME);
+        writeTeachersSchedule(workbook, SCHEDULE_BY_TEACHER_SHEET_NAME, duplicatedCellStyle);
         if (!teachersDuplicates.isEmpty()) {
             prepareDataForWritingDuplicates();
             writeTeachersSchedule(workbook, SCHEDULE_PROBLEMS_BY_TEACHER_SHEET_NAME);
@@ -62,10 +63,10 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
      * @param workbook  - current workbook
      * @param sheetName - name of current Excel sheet
      */
-    private void writeTeachersSchedule(XSSFWorkbook workbook, String sheetName) {
+    private void writeTeachersSchedule(XSSFWorkbook workbook, String sheetName, CellStyle... duplicatedCellStyle) {
         XSSFSheet scheduleSheet = workbook.createSheet(sheetName);
         writeHeader(scheduleSheet);
-        writeSchedule(scheduleSheet);
+        writeSchedule(scheduleSheet, duplicatedCellStyle);
     }
 
     /**
@@ -123,8 +124,8 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
      *
      * @param disciplineValues - list of schedules for current teacher
      * @return list of values for current teacher (discipline cipher, faculty, lesson type and file name).
-     *         When a teacher has some duplicates (different disciplines at one lesson)
-     *         then each result element contains semicolon.
+     * When a teacher has some duplicates (different disciplines at one lesson)
+     * then each result element contains semicolon.
      */
     private List<String> getDisciplinesForTeacherAndOneLesson(Set<ScheduleByGroupsOrTeachers> disciplineValues) {
         List<String> teacherDisciplines = new ArrayList<>();

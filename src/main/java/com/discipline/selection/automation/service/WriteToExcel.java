@@ -30,7 +30,7 @@ public interface WriteToExcel {
      * @param rowIndex  - index of new row
      */
     default void writeEntry(XSSFSheet sheet, CellStyle cellStyle, List<String> values, int rowIndex,
-                            CellStyle... uniqueCellStyle) {
+                            CellStyle... problemsCellStyle) {
         Cell cell;
         int columnIndex = 0;
         XSSFRow row = sheet.createRow(rowIndex);
@@ -44,8 +44,8 @@ public interface WriteToExcel {
                 cell.setCellValue(intValue);
             }
 
-            if (uniqueCellStyle != null && uniqueCellStyle.length > 0 && value != null && value.contains(SEMICOLON)) {
-                cell.setCellStyle(uniqueCellStyle[0]);
+            if (problemsCellStyle != null && problemsCellStyle.length > 0 && value != null && value.contains(SEMICOLON)) {
+                cell.setCellStyle(problemsCellStyle[0]);
             } else {
                 cell.setCellStyle(cellStyle);
             }
