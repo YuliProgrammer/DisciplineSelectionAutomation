@@ -5,6 +5,7 @@ import com.discipline.selection.automation.model.ConsolidationOfDisciplinesSched
 import com.discipline.selection.automation.model.Discipline;
 import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.enums.LessonType;
 import com.discipline.selection.automation.model.enums.WeekType;
 import com.discipline.selection.automation.service.writer.created.WriteDisciplinesToNewExcel;
 import com.discipline.selection.automation.util.CellStyleCreator;
@@ -202,11 +203,9 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
                         .collect(Collectors.toList());
 
         for (Schedule schedule : scheduleForDisciplineAndStudentGroup) {
-            if (schedule.getLessonType().equals(LABORATORY) || schedule.getLessonType().equals(PRACTICE)) {
-                String maxHoursPerLesson =
-                        schedule.getLessonType().equals(LABORATORY) ? discipline.getLaboratoryHoursPerWeek() :
-                                discipline.getPracticalHoursPerWeek();
-                Integer maxHours = StringMapper.parseStringToInt(maxHoursPerLesson);
+            LessonType lessonType = schedule.getLessonType();
+            if (lessonType.equals(LABORATORY) || lessonType.equals(PRACTICE)) {
+                Integer maxHours = getMaxLessonsNumberPerWeek(discipline, lessonType);
                 if (maxHours != null && Objects.equals(student.getCurrentNumberOfPracticeSchedule(), maxHours)) {
                     break;
                 }
@@ -223,6 +222,24 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         }
 
         return schedules;
+    }
+
+    /**
+     * Void return max lessons number for practice or laboratory per week.
+     *
+     * @param discipline - current discipline
+     * @param lessonType - current lesson type (practice or laboratory)
+     * @return max number of lessons per week
+     * (1 lesson = 2 hours, so to get lessons from hours we should divide hours by 2)
+     */
+    private Integer getMaxLessonsNumberPerWeek(Discipline discipline, LessonType lessonType) {
+        String maxHoursPerLesson = lessonType.equals(LABORATORY) ? discipline.getLaboratoryHoursPerWeek() :
+                discipline.getPracticalHoursPerWeek();
+        Integer maxHours = StringMapper.parseStringToInt(maxHoursPerLesson);
+        if (maxHours != null) {
+            maxHours = maxHours <= 2 ? 1 : maxHours / 2;
+        }
+        return maxHours;
     }
 
     /**
