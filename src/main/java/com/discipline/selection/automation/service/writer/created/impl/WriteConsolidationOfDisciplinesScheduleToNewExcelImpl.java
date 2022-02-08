@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.model.enums.LessonType.LABORATORY;
@@ -191,25 +192,17 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         student.setCurrentNumberOfPracticeSchedule(0);
 
         List<Schedule> scheduleForDisciplineAndStudentGroup =
-                scheduleForCurrentDisciplineCipher.stream()
-                        .filter(schedule -> schedule.getGroupCodes().contains(studentGroupCode))
-                        // If the lesson type is lecture than get all lesson with this type.
-                        // If the lesson type is practice or laboratory than get only those lessons where
-                        // current student count is less than maximum students count.
-                        .filter(schedule -> schedule.getLessonType().equals(LECTURE) ||
-                                schedule.getNumberOfStudentsInSubGroup() <
-                                        schedule.getMaxNumberOfStudentsInSubGroup())
-                        // .filter(FindDistinct.distinctByKey(Schedule::getLessonType))
-                        .collect(Collectors.toList());
+                getScheduleForCurrentUserAndDisciplineCipherWithoutPracticeDuplicates(
+                        scheduleForCurrentDisciplineCipher, studentGroupCode, discipline);
 
         for (Schedule schedule : scheduleForDisciplineAndStudentGroup) {
             LessonType lessonType = schedule.getLessonType();
             if (lessonType.equals(LABORATORY) || lessonType.equals(PRACTICE)) {
                 Integer maxHours = getMaxLessonsNumberPerWeek(discipline, lessonType);
-                if (maxHours != null && Objects.equals(student.getCurrentNumberOfPracticeSchedule(), maxHours)) {
+                if (maxHours == null && Objects.equals(student.getCurrentNumberOfPracticeSchedule(), maxHours)) {
                     break;
                 }
-                if (schedule.getNumberOfStudentsInSubGroup() + 1 != schedule.getMaxNumberOfStudentsInSubGroup()) {
+                if (schedule.getNumberOfStudentsInSubGroup() <= schedule.getMaxNumberOfStudentsInSubGroup()) {
                     schedule.setNumberOfStudentsInSubGroup(schedule.getNumberOfStudentsInSubGroup() + 1);
                     student.setCurrentNumberOfPracticeSchedule(student.getCurrentNumberOfPracticeSchedule() + 1);
                 }
@@ -222,6 +215,43 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         }
 
         return schedules;
+    }
+
+    /**
+     * Method return schedule for current user and discipline without practice duplicates.
+     * Practice duplicates here means that when in the input schedule file we we have
+     *
+     * @param scheduleForCurrentDisciplineCipher - schedule that contains all lessons type and can contains duplicates for practice
+     * @param studentGroupCode                   - group code for current student
+     * @return schedule fot current student and discipline without diplicates
+     */
+    private List<Schedule> getScheduleForCurrentUserAndDisciplineCipherWithoutPracticeDuplicates(
+            List<Schedule> scheduleForCurrentDisciplineCipher, String studentGroupCode, Discipline discipline) {
+
+        List<Schedule> scheduleWithoutDuplicates = scheduleForCurrentDisciplineCipher.stream()
+                .filter(schedule -> schedule.getGroupCodes().contains(studentGroupCode))
+                .filter(schedule -> schedule.getLessonType().equals(LECTURE))
+                .collect(Collectors.toList());
+
+        List<Schedule> practices = scheduleForCurrentDisciplineCipher.stream()
+                .filter(schedule -> schedule.getGroupCodes().contains(studentGroupCode))
+                .filter(schedule -> !schedule.getLessonType().equals(LECTURE))
+                .filter(schedule -> schedule.getNumberOfStudentsInSubGroup() <
+                        schedule.getMaxNumberOfStudentsInSubGroup())
+                .collect(Collectors.toList());
+
+        if (!practices.isEmpty()) {
+            if (practices.size() == 1) {
+                scheduleWithoutDuplicates.add(practices.get(0));
+            } else {
+                Integer maxHours = getMaxLessonsNumberPerWeek(discipline, practices.get(0).getLessonType());
+                int toIndex = maxHours > practices.size() ? practices.size() : maxHours;
+                IntStream.range(0, toIndex)
+                        .forEach(i -> scheduleWithoutDuplicates.add(practices.get(i)));
+            }
+        }
+
+        return scheduleWithoutDuplicates;
     }
 
     /**
