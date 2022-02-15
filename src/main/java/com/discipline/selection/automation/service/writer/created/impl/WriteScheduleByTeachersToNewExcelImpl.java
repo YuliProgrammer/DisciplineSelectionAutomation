@@ -108,8 +108,10 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
         List<String> teacherDisciplines = new ArrayList<>();
         for (String teacherName : teacherNames) {
             List<Schedule> scheduleByCurrentTeacher = schedules.get(teacherName);
+            scheduleByCurrentTeacher = filterSchedule(scheduleByCurrentTeacher, day, lessonNumber, weekType);
+
             Set<ScheduleByGroupsOrTeachers> scheduleByTeacher =
-                    new HashSet<>(filterSchedule(scheduleByCurrentTeacher, day, lessonNumber, weekType));
+                    new HashSet<>(mapScheduleToScheduleByGroupsOrTeachers(scheduleByCurrentTeacher));
             List<String> disciplinesForTeachersAndOneLesson = getDisciplinesForTeacherAndOneLesson(scheduleByTeacher);
             if (disciplinesForTeachersAndOneLesson.get(0).contains(SEMICOLON)) {
                 getTeachersDuplicates(scheduleByCurrentTeacher, teacherName);

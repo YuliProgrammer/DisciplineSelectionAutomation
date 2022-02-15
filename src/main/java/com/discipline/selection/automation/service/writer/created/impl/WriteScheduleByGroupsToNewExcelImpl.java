@@ -1,6 +1,5 @@
 package com.discipline.selection.automation.service.writer.created.impl;
 
-import com.discipline.selection.automation.model.Discipline;
 import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
 import com.discipline.selection.automation.model.Student;
@@ -75,8 +74,8 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteScheduleByGroupsOr
                 List<Schedule> scheduleByDisciplineForCurrentStudent =
                         schedules.get(student.getDiscipline().getDisciplineCipher());
                 if (scheduleByDisciplineForCurrentStudent != null) {
-                    List<ScheduleByGroupsOrTeachers> schedules = filterSchedule(scheduleByDisciplineForCurrentStudent,
-                            day, lessonNumber, weekType);
+                    List<ScheduleByGroupsOrTeachers> schedules = mapScheduleToScheduleByGroupsOrTeachers(
+                            filterSchedule(scheduleByDisciplineForCurrentStudent, day, lessonNumber, weekType));
                     schedules = schedules.stream()
                             .filter(schedule -> scheduleContainsGroup(schedule, group))
                             .collect(Collectors.toList());

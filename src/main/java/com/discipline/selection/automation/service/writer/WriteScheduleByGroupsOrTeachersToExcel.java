@@ -53,7 +53,7 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
      * @param weekType                              - the week type on which the discipline is to be held
      * @return list of schedules for current student that that corresponds to current parameters
      */
-    protected List<ScheduleByGroupsOrTeachers> filterSchedule(
+    protected List<Schedule> filterSchedule(
             List<Schedule> scheduleByDisciplineForCurrentStudent,
             WeekDay day, int lessonNumber, WeekType weekType) {
         return scheduleByDisciplineForCurrentStudent.stream()
@@ -61,6 +61,16 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
                 .filter(schedule -> schedule.getLessonNumber().equals(lessonNumber))
                 .filter(schedule -> schedule.getTypeOfWeek().equals(weekType) ||
                         (!weekType.equals(EVERY_WEEK) && schedule.getTypeOfWeek().equals(EVERY_WEEK)))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * @param scheduleByDisciplineForCurrentStudent - list of schedules for current student
+     * @return list of ScheduleByGroupsOrTeachers
+     */
+    protected List<ScheduleByGroupsOrTeachers> mapScheduleToScheduleByGroupsOrTeachers(
+            List<Schedule> scheduleByDisciplineForCurrentStudent) {
+        return scheduleByDisciplineForCurrentStudent.stream()
                 .map(this::generateScheduleByGroupsOrTeachers)
                 .collect(Collectors.toList());
     }
@@ -83,7 +93,7 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
                 .build();
     }
 
-    private void writeEntry(XSSFSheet sheet, List<String> values,    CellStyle... duplicatedCellStyle) {
+    private void writeEntry(XSSFSheet sheet, List<String> values, CellStyle... duplicatedCellStyle) {
         writeEntry(sheet, setForeground(rowIndex), values, rowIndex, duplicatedCellStyle);
         rowIndex += 1;
         this.values.clear();
