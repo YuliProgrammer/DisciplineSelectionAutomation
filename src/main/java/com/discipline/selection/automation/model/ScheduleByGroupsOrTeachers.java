@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(of = {"oneDisciplineCipher", "dayOfWeek", "lessonNumber"})
-@EqualsAndHashCode(of = {"oneDisciplineCipher"})
+@EqualsAndHashCode(of = {"oneDisciplineCipher", "fileName", "groupCodes"})
 public class ScheduleByGroupsOrTeachers {
 
     private String oneDisciplineCipher;
