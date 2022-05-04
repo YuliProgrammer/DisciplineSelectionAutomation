@@ -16,6 +16,11 @@ import java.util.stream.Stream;
 
 import static com.discipline.selection.automation.util.Constants.COMA;
 
+/**
+ * Class creates Schedule object from Excel rows data
+ *
+ * @author Yuliia_Dolnikova
+ */
 @UtilityClass
 public class ScheduleMapper {
 

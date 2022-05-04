@@ -4,6 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class for reading data about student from .xlsx
+ *
+ * @author Yuliia_Dolnikova
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

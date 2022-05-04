@@ -30,8 +30,19 @@ public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
     protected XSSFCellStyle duplicatedCellStyle;
     protected XSSFCellStyle duplicatedAndFarCellStyle;
 
+    /**
+     * key - discipline cipher, value - list of students who's chosen this discipline
+     */
     protected Map<String, List<Student>> students;
+
+    /**
+     * key - discipline cipher, value - discipline
+     */
     protected Map<String, Discipline> disciplines;
+
+    /**
+     * key - discipline cipher, value - schedule for this discipline
+     */
     protected Map<String, List<Schedule>> schedules;
 
     /**

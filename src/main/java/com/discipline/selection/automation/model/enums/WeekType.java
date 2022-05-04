@@ -2,6 +2,12 @@ package com.discipline.selection.automation.model.enums;
 
 import java.util.stream.Stream;
 
+
+/**
+ * Enum for all possible week types
+ *
+ * @author Yuliia_Dolnikova
+ */
 public enum WeekType {
 
     NUMERATOR("числ."),

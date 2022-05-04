@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class for writing in .xlxs
+ * Class for writing  schedule for group or teacher into .xlxs
+ *
+ * @author Yuliia_Dolnikova
  */
 @Data
 @Builder

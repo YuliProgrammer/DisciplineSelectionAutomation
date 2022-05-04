@@ -12,7 +12,9 @@ import java.util.List;
 import static java.util.Objects.nonNull;
 
 /**
- * Class for writing in .xlxs
+ * Class for writing consolidation of discipline in .xlxs
+ *
+ * @author Yuliia_Dolnikova
  */
 @Data
 @Builder

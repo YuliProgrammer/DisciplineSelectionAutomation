@@ -1,13 +1,17 @@
 package com.discipline.selection.automation.mapper;
 
+import com.discipline.selection.automation.model.Student;
 import lombok.experimental.UtilityClass;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.discipline.selection.automation.model.Student;
-
+/**
+ * Class creates Student object from Excel rows data
+ *
+ * @author Yuliia_Dolnikova
+ */
 @UtilityClass
 public class StudentMapper {
 

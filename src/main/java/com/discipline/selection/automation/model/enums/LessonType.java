@@ -8,6 +8,11 @@ import java.util.stream.Stream;
 
 import static com.discipline.selection.automation.util.Constants.COMA;
 
+/**
+ * Enum for all possible lessons types
+ *
+ * @author Yuliia_Dolnikova
+ */
 public enum LessonType {
 
     LECTURE("лк"),

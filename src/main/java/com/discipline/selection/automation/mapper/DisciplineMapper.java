@@ -8,6 +8,11 @@ import java.util.Map;
 import static com.discipline.selection.automation.util.Constants.NUMBER_OF_STUDENTS_IN_FLOW;
 import static com.discipline.selection.automation.util.Constants.NUMBER_OF_STUDENTS_IN_GROUP;
 
+/**
+ * Class creates Discipline object from Excel rows data
+ *
+ * @author Yuliia_Dolnikova
+ */
 @UtilityClass
 public class DisciplineMapper {
 

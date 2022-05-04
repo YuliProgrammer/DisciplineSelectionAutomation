@@ -14,6 +14,6 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GroupedStudents {
-   private Map<String, List<Student>> studentsGroupedByDisciplines = new LinkedHashMap<>();
-    private   Map<String, List<Student>> studentsGroupedByGroup = new LinkedHashMap<>();
+    private Map<String, List<Student>> studentsGroupedByDisciplines = new LinkedHashMap<>();
+    private Map<String, List<Student>> studentsGroupedByGroup = new LinkedHashMap<>();
 }

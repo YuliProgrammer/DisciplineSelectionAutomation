@@ -16,7 +16,9 @@ import java.util.List;
 import static com.discipline.selection.automation.util.Constants.BLANK_LINE;
 
 /**
- * Class for reading from .xlxs
+ * Class for reading data about schedule from .xlsx
+ *
+ * @author Yuliia_Dolnikova
  */
 @Data
 @Builder
@@ -58,7 +60,8 @@ public class Schedule {
     }
 
     public String scheduleForConsolidationOfDisciplines() {
-        return teacherName + BLANK_LINE + dayOfWeek.getName() + BLANK_LINE + lessonNumber + BLANK_LINE + typeOfWeek.getName() +
+        return teacherName + BLANK_LINE + dayOfWeek.getName() + BLANK_LINE + lessonNumber + BLANK_LINE +
+                typeOfWeek.getName() +
                 BLANK_LINE + lessonType.getName();
     }
 

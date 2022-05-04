@@ -8,6 +8,11 @@ import java.util.stream.Stream;
 
 import static com.discipline.selection.automation.util.Constants.COMA;
 
+/**
+ * Enum for all possible faculties types - city's regions where faculty is located
+ *
+ * @author Yuliia_Dolnikova
+ */
 public enum FacultyType {
 
     ONLINE(0),

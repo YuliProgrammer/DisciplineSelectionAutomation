@@ -13,6 +13,11 @@ import java.util.stream.Collectors;
 import static com.discipline.selection.automation.util.Constants.ONE;
 import static com.discipline.selection.automation.util.Constants.SEMICOLON;
 
+/**
+ * Class for reading data about discipline from .xlsx
+ *
+ * @author Yuliia_Dolnikova
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

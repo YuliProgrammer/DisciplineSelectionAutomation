@@ -2,6 +2,11 @@ package com.discipline.selection.automation.mapper;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Class parse string value to int
+ *
+ * @author Yuliia_Dolnikova
+ */
 @UtilityClass
 public class StringMapper {
 

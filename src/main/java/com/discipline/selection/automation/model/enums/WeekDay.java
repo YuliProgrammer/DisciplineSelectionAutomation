@@ -4,12 +4,17 @@ import com.discipline.selection.automation.exceptions.InvalidDataException;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.discipline.selection.automation.util.Constants.COMA;
 
+
+/**
+ * Enum for all possible work week days
+ *
+ * @author Yuliia_Dolnikova
+ */
 public enum WeekDay {
 
     MONDAY(Arrays.asList("пн.", "пн")),
