@@ -44,6 +44,7 @@ import static com.discipline.selection.automation.util.Constants.CONSOLIDATION_O
 public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends WriteDisciplinesToNewExcel {
 
     private final Set<String> disciplinesWithoutSchedule;
+    private Set<ConsolidationOfDisciplinesSchedule> consolidationSchedules;
 
     public WriteConsolidationOfDisciplinesScheduleToNewExcelImpl(Map<String, List<Student>> students,
                                                                  Map<String, Discipline> disciplines,
@@ -65,12 +66,12 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         XSSFSheet farScheduleSheet =
                 workbook.createSheet(CONSOLIDATION_OF_DISCIPLINES_FAR_SCHEDULE_SHEET_NAME);
 
-        Set<ConsolidationOfDisciplinesSchedule> schedules = generateSchedule();
-        Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule = getDuplicates(schedules);
-        Set<ConsolidationOfDisciplinesSchedule> farFacultiesSchedule = getAddressesFar(schedules);
+        consolidationSchedules = generateSchedule();
+        Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule = getDuplicates(consolidationSchedules);
+        Set<ConsolidationOfDisciplinesSchedule> farFacultiesSchedule = getAddressesFar(consolidationSchedules);
 
         writeHeader(scheduleSheet);
-        writeSchedule(scheduleSheet, schedules);
+        writeSchedule(scheduleSheet, consolidationSchedules);
         writeDuplicatesCount(scheduleSheet, duplicatedSchedule.size());
         writeFarLessonsCount(scheduleSheet, farFacultiesSchedule.size());
 
@@ -180,15 +181,15 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
                                                                                              String disciplineCipher) {
         Set<ConsolidationOfDisciplinesSchedule> schedules = new LinkedHashSet<>();
         Discipline discipline = this.disciplines.get(disciplineCipher);
-        List<Schedule> scheduleForCurrentDisciplineCipher = this.schedules.get(disciplineCipher);
+        List<Schedule> scheduleForCurrentDisciplineCipher =
+                this.schedules.get(disciplineCipher); // full schedule for discipline
 
         if (scheduleForCurrentDisciplineCipher == null) {
             scheduleForCurrentDisciplineCipher = new ArrayList<>();
             disciplinesWithoutSchedule.add(disciplineCipher);
         }
 
-        int indexOfLastHyphen = student.getGroup().lastIndexOf("-");
-        String studentGroupCode = student.getGroup().substring(0, indexOfLastHyphen);
+        String studentGroupCode = getStudentGroup(student);
         student.setCurrentNumberOfPracticeSchedule(0);
 
         List<Schedule> scheduleForDisciplineAndStudentGroup =
@@ -197,8 +198,13 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
 
         for (Schedule schedule : scheduleForDisciplineAndStudentGroup) {
             LessonType lessonType = schedule.getLessonType();
+
+            // if lesson type is Practice or Laboratory we need to consider max allowed student number per lesson
             if (lessonType.equals(LABORATORY) || lessonType.equals(PRACTICE)) {
                 Integer maxHours = getMaxLessonsNumberPerWeek(discipline, lessonType);
+
+                // if the max allowed student number equal to the current number
+                // we need to investigate next practice\laboratory lesson for this discipline
                 if (maxHours == null && Objects.equals(student.getCurrentNumberOfPracticeSchedule(), maxHours)) {
                     break;
                 }
@@ -218,21 +224,35 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
     }
 
     /**
-     * Method return schedule for current user and discipline without practice duplicates.
-     * Practice duplicates here means that when in the input schedule file we we have
+     * Return group code instead of full group name,
+     * for instance, "ПА" instead of "ПА-18"
      *
-     * @param scheduleForCurrentDisciplineCipher - schedule that contains all lessons type and can contains duplicates for practice
+     * @param student - student with group
+     * @return group code
+     */
+    private String getStudentGroup(Student student) {
+        int indexOfLastHyphen = student.getGroup().lastIndexOf("-");
+        return student.getGroup().substring(0, indexOfLastHyphen);
+    }
+
+    /**
+     * Method return schedule for current user and discipline without practice duplicates.
+     * Practice duplicates here means that in the input schedule file we have more than 1 time for practice for current group
+     *
+     * @param scheduleForCurrentDisciplineCipher - schedule that contains all lessons type and can contain duplicates for practice
      * @param studentGroupCode                   - group code for current student
-     * @return schedule fot current student and discipline without diplicates
+     * @return schedule fot current student and discipline without duplicates
      */
     private List<Schedule> getScheduleForCurrentUserAndDisciplineCipherWithoutPracticeDuplicates(
             List<Schedule> scheduleForCurrentDisciplineCipher, String studentGroupCode, Discipline discipline) {
 
+        // lecture lessons never have any duplicates
         List<Schedule> scheduleWithoutDuplicates = scheduleForCurrentDisciplineCipher.stream()
                 .filter(schedule -> schedule.getGroupCodes().contains(studentGroupCode))
                 .filter(schedule -> schedule.getLessonType().equals(LECTURE))
                 .collect(Collectors.toList());
 
+        // find all practices schedule that contain free places for student
         List<Schedule> practices = scheduleForCurrentDisciplineCipher.stream()
                 .filter(schedule -> schedule.getGroupCodes().contains(studentGroupCode))
                 .filter(schedule -> !schedule.getLessonType().equals(LECTURE))
@@ -240,15 +260,18 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
                         schedule.getMaxNumberOfStudentsInSubGroup())
                 .collect(Collectors.toList());
 
-        if (!practices.isEmpty()) {
-            if (practices.size() == 1) {
-                scheduleWithoutDuplicates.add(practices.get(0));
-            } else {
-                Integer maxHours = getMaxLessonsNumberPerWeek(discipline, practices.get(0).getLessonType());
-                int toIndex = maxHours > practices.size() ? practices.size() : maxHours;
-                IntStream.range(0, toIndex)
-                        .forEach(i -> scheduleWithoutDuplicates.add(practices.get(i)));
-            }
+        if (practices.isEmpty()) {
+            return scheduleWithoutDuplicates;
+        }
+
+        if (practices.size() == 1) {
+            scheduleWithoutDuplicates.add(practices.get(0));
+        } else {
+            // if practice have 4 time per week => we should add this practice lesson 2 times per week
+            Integer maxHours = getMaxLessonsNumberPerWeek(discipline, practices.get(0).getLessonType());
+            int toIndex = maxHours > practices.size() ? practices.size() : maxHours;
+            IntStream.range(0, toIndex)
+                    .forEach(i -> scheduleWithoutDuplicates.add(practices.get(i)));
         }
 
         return scheduleWithoutDuplicates;
