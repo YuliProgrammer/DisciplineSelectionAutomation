@@ -27,8 +27,8 @@ public enum FacultyType {
         this.type = type;
     }
 
-    public static FacultyType of(int value, Integer rowIndex, String fileName) {
-        return Stream.of(FACULTY_TYPES)
+    public static FacultyType of(Integer value, Integer rowIndex, String fileName) {
+        return value == null ? OTHER : Stream.of(FACULTY_TYPES)
                 .filter(facultyType -> facultyType.getType() == value)
                 .findFirst()
                 .orElseThrow(() -> new InvalidDataException(

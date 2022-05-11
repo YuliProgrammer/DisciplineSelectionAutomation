@@ -11,11 +11,11 @@ import lombok.experimental.UtilityClass;
 public class StringMapper {
 
     public Integer parseStringToInt(String value) {
-        if (value == null || value.isEmpty()) {
+        if (value == null || value.trim().isEmpty()) {
             return null;
         }
         try {
-            return (int) Double.parseDouble(value);
+            return (int) Double.parseDouble(value.trim());
         } catch (NumberFormatException e) {
             return null;
         }
