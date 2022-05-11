@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.discipline.selection.automation.util.Constants.COMA;
+import static com.discipline.selection.automation.util.DisciplineCipherEngToUa.replaceEngByUa;
 
 /**
  * Class creates Schedule object from Excel rows data
@@ -59,7 +60,7 @@ public class ScheduleMapper {
 
             switch (entry.getKey()) {
                 case 0:
-                    schedule.setDisciplineCipher(value);
+                    schedule.setDisciplineCipher(replaceEngByUa(value));
                     break;
                 case 1:
                     schedule.setGroupCodes(Stream.of(value.split(COMA))

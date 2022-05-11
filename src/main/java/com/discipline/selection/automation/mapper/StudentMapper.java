@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.discipline.selection.automation.util.DisciplineCipherEngToUa.replaceEngByUa;
+
 /**
  * Class creates Student object from Excel rows data
  *
@@ -44,7 +46,7 @@ public class StudentMapper {
                     student.setDisciplinesNumber(value);
                     break;
                 case 6:
-                    student.getDiscipline().setDisciplineCipher(value.toLowerCase());
+                    student.getDiscipline().setDisciplineCipher(replaceEngByUa(value));
                     break;
                 case 7:
                     student.getDiscipline().setDisciplineName(value);

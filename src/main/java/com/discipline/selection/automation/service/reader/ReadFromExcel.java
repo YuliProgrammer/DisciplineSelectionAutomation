@@ -5,8 +5,10 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Interface that can read data from Excel file
@@ -24,6 +26,10 @@ public interface ReadFromExcel<K, V> {
      * @return map where key - it is a column index and value - it is a cell data
      */
     default Map<Integer, String> addCellValuesToMap(Row row) {
+        if (Objects.isNull(row)) {
+            return new HashMap<>();
+        }
+
         String value;
         Map<Integer, String> data = new LinkedHashMap<>();
 

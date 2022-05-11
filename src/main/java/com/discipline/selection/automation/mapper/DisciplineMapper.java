@@ -7,6 +7,7 @@ import java.util.Map;
 
 import static com.discipline.selection.automation.util.Constants.NUMBER_OF_STUDENTS_IN_FLOW;
 import static com.discipline.selection.automation.util.Constants.NUMBER_OF_STUDENTS_IN_GROUP;
+import static com.discipline.selection.automation.util.DisciplineCipherEngToUa.replaceEngByUa;
 
 /**
  * Class creates Discipline object from Excel rows data
@@ -27,7 +28,7 @@ public class DisciplineMapper {
             String value = entry.getValue().trim();
             switch (entry.getKey()) {
                 case 0:
-                    discipline.setDisciplineCipher(value.toLowerCase());
+                    discipline.setDisciplineCipher(replaceEngByUa(value));
                     break;
                 case 1:
                     discipline.setDisciplineName(value);
