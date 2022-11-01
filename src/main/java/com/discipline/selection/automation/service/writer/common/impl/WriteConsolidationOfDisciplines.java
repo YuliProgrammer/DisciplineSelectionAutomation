@@ -124,7 +124,7 @@ public class WriteConsolidationOfDisciplines implements Writer {
             writeScheduleByGroups.writeToExcel(workbook);
             System.out.printf("Розклад груп було записано у новий вихiдний файл \"%s\" (Лист №1).%n", fileName);
 
-            System.out.println("\nЗапис розкладу НПП та прогблем із цим розкладом...");
+            System.out.println("\nЗапис розкладу НПП та проблем із цим розкладом...");
             writeScheduleByTeachers.writeToExcel(workbook);
             System.out.printf("Розклад НПП було записано у новий вихiдний файл \"%s\" (Лист №2).%n", fileName);
             System.out.printf("Проблеми із розклад НПП було записано у новий вихiдний файл \"%s\" (Лист №3).%n", fileName);
