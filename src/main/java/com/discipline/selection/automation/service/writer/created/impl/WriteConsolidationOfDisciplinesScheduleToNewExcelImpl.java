@@ -37,7 +37,8 @@ import static com.discipline.selection.automation.util.Constants.CONSOLIDATION_O
 
 /**
  * Class that creates the schedule of disciplines for students and
- * writes this schedule to a new Excel file
+ * writes this schedule to a new Excel file.
+ * Also searches for duplicates and far faculties and write them into new Excel files.
  *
  * @author Yuliia_Dolnikova
  */
@@ -87,9 +88,16 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         writeHeader(farScheduleSheet);
         writeSchedule(farScheduleSheet, farFacultiesSchedule);
 
+
         if (!disciplinesWithoutSchedule.isEmpty()) {
             System.out.printf("\nВ файлi \"%s\" немає розкладу для дисциплiн [%s].\n%n", FILE_NAME,
                     String.join(COMA, disciplinesWithoutSchedule));
+        }
+        if (!duplicatedSchedule.isEmpty()) {
+            System.out.println("Запис можливих перестановок дисциплін");
+            WriteDisciplinesToNewExcel writeDisciplinesToNewExcel = new WritePossibleTimesForDuplicatesLectures(
+                    consolidationSchedules, duplicatedSchedule);
+            writeDisciplinesToNewExcel.writeToExcel(workbook);
         }
     }
 
@@ -332,8 +340,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
             Schedule currentSchedule = disciplinesSchedule.getSchedule();
             filterSchedule(schedules, disciplinesSchedule, currentSchedule)
                     .stream()
-                    .filter(consolidation -> consolidation.getSchedule().getLessonNumber()
-                            .equals(currentSchedule.getLessonNumber()))
+                    .filter(consolidation -> consolidation.getSchedule().getScheduleDate().getLessonNumber()
+                            .equals(currentSchedule.getScheduleDate().getLessonNumber()))
                     .filter(consolidation -> !consolidation.getSchedule().getDisciplineCipher()
                             .equals(disciplinesSchedule.getDisciplineCipher()))
                     .forEach(consolidation -> {
@@ -362,8 +370,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
             Schedule currentSchedule = disciplinesSchedule.getSchedule();
             filterSchedule(schedules, disciplinesSchedule, currentSchedule)
                     .stream()
-                    .filter(consolidation -> Math.abs(consolidation.getSchedule().getLessonNumber()
-                            - currentSchedule.getLessonNumber()) == 1)
+                    .filter(consolidation -> Math.abs(consolidation.getSchedule().getScheduleDate().getLessonNumber()
+                            - currentSchedule.getScheduleDate().getLessonNumber()) == 1)
                     .filter(consolidation -> Math.abs(consolidation.getSchedule().getFacultyType().getType()
                             - currentSchedule.getFacultyType().getType()) > 0)
                     .forEach(consolidation -> {
@@ -393,14 +401,14 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
                 .filter(consolidation -> consolidation.getStudentName()
                         .equals(disciplinesSchedule.getStudentName()))
                 .filter(consolidation ->
-                        consolidation.getSchedule().getTypeOfWeek()
-                                .equals(currentSchedule.getTypeOfWeek()) ||
-                                (consolidation.getSchedule().getTypeOfWeek() != WeekType.EVERY_WEEK &&
-                                        currentSchedule.getTypeOfWeek() == WeekType.EVERY_WEEK) ||
-                                (consolidation.getSchedule().getTypeOfWeek() == WeekType.EVERY_WEEK &&
-                                        currentSchedule.getTypeOfWeek() != WeekType.EVERY_WEEK))
-                .filter(consolidation -> consolidation.getSchedule().getDayOfWeek()
-                        .equals(currentSchedule.getDayOfWeek()))
+                        consolidation.getSchedule().getScheduleDate().getTypeOfWeek()
+                                .equals(currentSchedule.getScheduleDate().getTypeOfWeek()) ||
+                                (consolidation.getSchedule().getScheduleDate().getTypeOfWeek() != WeekType.EVERY_WEEK &&
+                                        currentSchedule.getScheduleDate().getTypeOfWeek() == WeekType.EVERY_WEEK) ||
+                                (consolidation.getSchedule().getScheduleDate().getTypeOfWeek() == WeekType.EVERY_WEEK &&
+                                        currentSchedule.getScheduleDate().getTypeOfWeek() != WeekType.EVERY_WEEK))
+                .filter(consolidation -> consolidation.getSchedule().getScheduleDate().getDayOfWeek()
+                        .equals(currentSchedule.getScheduleDate().getDayOfWeek()))
                 .collect(Collectors.toSet());
     }
 

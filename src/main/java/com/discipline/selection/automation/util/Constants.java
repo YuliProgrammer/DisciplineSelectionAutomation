@@ -15,6 +15,7 @@ public class Constants {
     public static final Integer DISCIPLINES_FOR_DIFF_FACULTIES_SHEET_INDEX = 2;
 
     public static final String COMA = ",";
+    public static final String EMPTY_VALUE = "  ";
     public static final String SEMICOLON = ";\n";
     public static final String BLANK_LINE = " ";
     public static final String XLS_FILE_FORMAT = ".xls";
@@ -32,6 +33,7 @@ public class Constants {
 
     public static final String STUDENTS_COUNT_COLUMN_TITLE = "К-ть студентiв";
     public static final String CONSOLIDATION_OF_DISCIPLINES_SHEET_NAME = "Зведення дисц шифр спец";
+    public static final String POSSIBLE_SCHEDULE_CHANGES_SHEET_NAME = "Можливі зміни розкладу";
     public static final String SCHEDULE_BY_GROUPS_SHEET_NAME = "Розклад груп";
     public static final String SCHEDULE_BY_TEACHER_SHEET_NAME = "Розклад НПП";
     public static final String SCHEDULE_PROBLEMS_BY_TEACHER_SHEET_NAME = "Розклад НПП (Проблеми)";
@@ -55,7 +57,7 @@ public class Constants {
             "Розклад занять (Прiзище та iм'я НПП, днi тижня, пара, види занять)",
             "Місце проведення", "Корпус/аудиторія, де будуть проводиться заняття"));
 
-    public static final Set<String> SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER =
+    public static final Set<String> SCHEDULE_DATES_HEADER =
             new LinkedHashSet<>(Arrays.asList("День", "Пара", "Числ/знам"));
 
     public static final Set<String> SCHEDULE_BY_TEACHER_HEADER =

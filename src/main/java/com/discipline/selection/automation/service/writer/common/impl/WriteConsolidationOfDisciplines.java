@@ -116,6 +116,7 @@ public class WriteConsolidationOfDisciplines implements Writer {
                 new WriteScheduleByGroupsToNewExcelImpl(studentsGroupedByGroup, schedule);
         WriteToExcel writeScheduleByTeachers =
                 new WriteScheduleByTeachersToNewExcelImpl(schedulesGroupedByTeacher);
+
         String fileName = getFileNameForSchedule();
         File file = new File(fileName);
 

@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.List;
 
+import static com.discipline.selection.automation.util.Constants.EMPTY_VALUE;
 import static com.discipline.selection.automation.util.Constants.SEMICOLON;
 
 /**
@@ -44,7 +45,8 @@ public interface WriteToExcel {
                 cell.setCellValue(intValue);
             }
 
-            if (problemsCellStyle != null && problemsCellStyle.length > 0 && value != null && value.contains(SEMICOLON)) {
+            if (problemsCellStyle != null && problemsCellStyle.length > 0
+                    && value != null && (value.contains(SEMICOLON) || value.equals(EMPTY_VALUE))) {
                 cell.setCellStyle(problemsCellStyle[0]);
             } else {
                 cell.setCellStyle(cellStyle);

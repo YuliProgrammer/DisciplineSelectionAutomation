@@ -4,7 +4,7 @@ import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
-import com.discipline.selection.automation.service.writer.WriteScheduleByGroupsOrTeachersToExcel;
+import com.discipline.selection.automation.service.writer.WriteScheduleForAllWorkDaysToExcel;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER;
+import static com.discipline.selection.automation.util.Constants.SCHEDULE_DATES_HEADER;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_TEACHER_HEADER;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_TEACHER_SHEET_NAME;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_PROBLEMS_BY_TEACHER_SHEET_NAME;
@@ -30,7 +30,7 @@ import static com.discipline.selection.automation.util.Constants.SEMICOLON;
  *
  * @author Yuliia_Dolnikova
  */
-public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroupsOrTeachersToExcel {
+public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleForAllWorkDaysToExcel {
 
     private Set<String> teacherNames = new LinkedHashSet<>();
     private final Map<String, List<Schedule>> teachersDuplicates = new HashMap<>();
@@ -87,7 +87,7 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleByGroups
      * @param sheet - current new Excel sheet
      */
     private void writeHeader(XSSFSheet sheet) {
-        columnIndex = writeHeader(sheet, SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER, columnIndex);
+        columnIndex = writeHeader(sheet, SCHEDULE_DATES_HEADER, columnIndex);
         List<String> header = new ArrayList<>();
         this.teacherNames.forEach(teacherName -> {
             header.add(teacherName);

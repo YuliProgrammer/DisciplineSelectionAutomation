@@ -4,7 +4,6 @@ import com.discipline.selection.automation.exceptions.InvalidDataException;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,11 +23,11 @@ public class Dialog {
         String scheduleFileName;
         for (int i = 0; i < fileCount; i++) {
             scheduleFileName = getFileNameDialog(scanner,
-                    String.format("Введiть iм'я %d файлу, який мiстить розклад викладачiв: ", i + 1));
-            while(scheduleFileNames.contains(scheduleFileName)){
+                    String.format("Введiть iм'я %dго файлу, який мiстить розклад викладачiв: ", i + 1));
+            while (scheduleFileNames.contains(scheduleFileName)) {
                 System.out.println("Ви вже ввели це ім'я файлу.");
                 scheduleFileName = getFileNameDialog(scanner,
-                        String.format("Введiть iм'я %d файлу, який мiстить розклад викладачiв: ", i + 1));
+                        String.format("Введiть iм'я %dго файлу, який мiстить розклад викладачiв: ", i + 1));
             }
             scheduleFileNames.add(scheduleFileName);
         }
@@ -64,7 +63,7 @@ public class Dialog {
             System.out.printf("Файл з iм'ям \"%s\" не знайднено. " +
                             "Будь ласка, перевiрте правильнiсть iменi файлу (воно обов'язково має включати повний шлях до файлу).%n",
                     fileName);
-            throw new InvalidDataException(String.format("Файл з iм'ям \"" + fileName + "\" не знайднено.", fileName));
+            throw new InvalidDataException(String.format("Файл з iм'ям \"%s\" не знайднено.", fileName));
         }
     }
 

@@ -18,7 +18,7 @@ import static com.discipline.selection.automation.model.enums.WeekDay.DAYS;
 import static com.discipline.selection.automation.model.enums.WeekType.EVERY_WEEK;
 import static com.discipline.selection.automation.model.enums.WeekType.WEEK_TYPES;
 
-public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDisciplinesToNewExcel {
+public abstract class WriteScheduleForAllWorkDaysToExcel extends WriteDisciplinesToNewExcel {
 
     protected List<String> values = new ArrayList<>();
     protected int columnIndex = 0;
@@ -57,10 +57,10 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
             List<Schedule> scheduleByDisciplineForCurrentStudent,
             WeekDay day, int lessonNumber, WeekType weekType) {
         return scheduleByDisciplineForCurrentStudent.stream()
-                .filter(schedule -> schedule.getDayOfWeek().equals(day))
-                .filter(schedule -> schedule.getLessonNumber().equals(lessonNumber))
-                .filter(schedule -> schedule.getTypeOfWeek().equals(weekType) ||
-                        (!weekType.equals(EVERY_WEEK) && schedule.getTypeOfWeek().equals(EVERY_WEEK)))
+                .filter(schedule -> schedule.getScheduleDate().getDayOfWeek().equals(day))
+                .filter(schedule -> schedule.getScheduleDate().getLessonNumber().equals(lessonNumber))
+                .filter(schedule -> schedule.getScheduleDate().getTypeOfWeek().equals(weekType) ||
+                        (!weekType.equals(EVERY_WEEK) && schedule.getScheduleDate().getTypeOfWeek().equals(EVERY_WEEK)))
                 .collect(Collectors.toList());
     }
 
@@ -84,10 +84,10 @@ public abstract class WriteScheduleByGroupsOrTeachersToExcel extends WriteDiscip
                 .oneDisciplineCipher(schedule.getDisciplineCipher())
                 .facultyType(schedule.getFacultyType())
                 .facultyAddress(schedule.getFacultyAddress())
-                .dayOfWeek(schedule.getDayOfWeek())
-                .lessonNumber(schedule.getLessonNumber())
+                .dayOfWeek(schedule.getScheduleDate().getDayOfWeek())
+                .lessonNumber(schedule.getScheduleDate().getLessonNumber())
                 .lessonType(schedule.getLessonType())
-                .typeOfWeek(schedule.getTypeOfWeek())
+                .typeOfWeek(schedule.getScheduleDate().getTypeOfWeek())
                 .fileName(schedule.getFileName())
                 .groupCodes(schedule.getGroupCodes())
                 .build();

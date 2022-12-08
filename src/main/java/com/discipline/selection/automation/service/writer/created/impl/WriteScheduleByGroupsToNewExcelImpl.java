@@ -6,7 +6,7 @@ import com.discipline.selection.automation.model.Student;
 import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
-import com.discipline.selection.automation.service.writer.WriteScheduleByGroupsOrTeachersToExcel;
+import com.discipline.selection.automation.service.writer.WriteScheduleForAllWorkDaysToExcel;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER;
+import static com.discipline.selection.automation.util.Constants.SCHEDULE_DATES_HEADER;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GROUPS_SHEET_NAME;
 
 /**
@@ -27,7 +27,7 @@ import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GRO
  *
  * @author Yuliia_Dolnikova
  */
-public class WriteScheduleByGroupsToNewExcelImpl extends WriteScheduleByGroupsOrTeachersToExcel {
+public class WriteScheduleByGroupsToNewExcelImpl extends WriteScheduleForAllWorkDaysToExcel {
 
     private final Set<String> studentsGroups = new LinkedHashSet<>();
 
@@ -54,7 +54,7 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteScheduleByGroupsOr
      * @param sheet - current new sheet
      */
     private void writeHeader(XSSFSheet sheet) {
-        columnIndex = writeHeader(sheet, SCHEDULE_BY_GROUPS_AND_TEACHERS_HEADER, columnIndex);
+        columnIndex = writeHeader(sheet, SCHEDULE_DATES_HEADER, columnIndex);
         columnIndex = writeHeader(sheet, studentsGroups, columnIndex); // write the second part of the header
     }
 

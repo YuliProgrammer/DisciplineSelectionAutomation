@@ -2,6 +2,7 @@ package com.discipline.selection.automation.mapper;
 
 import com.discipline.selection.automation.exceptions.InvalidDataException;
 import com.discipline.selection.automation.model.Schedule;
+import com.discipline.selection.automation.model.ScheduleDate;
 import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.LessonType;
 import com.discipline.selection.automation.model.enums.WeekDay;
@@ -51,6 +52,8 @@ public class ScheduleMapper {
      */
     private List<Schedule> getSchedule(Map<Integer, String> rowData, Integer rowIndex, String fileName) {
         Schedule schedule = new Schedule();
+        ScheduleDate scheduleDate = new ScheduleDate();
+
         List<Schedule> schedules = new ArrayList<>();
         List<String> lessonNumbers = new ArrayList<>();
 
@@ -78,7 +81,7 @@ public class ScheduleMapper {
                     schedule.setTeacherName(value);
                     break;
                 case 5:
-                    schedule.setTypeOfWeek(WeekType.of(value));
+                    scheduleDate.setTypeOfWeek(WeekType.of(value));
                     break;
                 case 6:
                     lessonNumbers = Stream.of(value.split(COMA))
@@ -87,7 +90,7 @@ public class ScheduleMapper {
                             .collect(Collectors.toList());
                     break;
                 case 7:
-                    schedule.setDayOfWeek(WeekDay.of(value, rowIndex, fileName));
+                    scheduleDate.setDayOfWeek(WeekDay.of(value, rowIndex, fileName));
                     break;
                 case 8:
                     if (value.endsWith(".")) {
@@ -107,9 +110,13 @@ public class ScheduleMapper {
             }
         }
 
+        schedule.setScheduleDate(scheduleDate);
         for (String lessonNumber : lessonNumbers) {
             Schedule newSchedule = new Schedule(schedule);
-            newSchedule.setLessonNumber(StringMapper.parseStringToInt(lessonNumber));
+
+            ScheduleDate newScheduleDate = newSchedule.getScheduleDate();
+            newScheduleDate.setLessonNumber(StringMapper.parseStringToInt(lessonNumber));
+            newSchedule.setScheduleDate(newScheduleDate);
             schedules.add(newSchedule);
         }
 
@@ -136,11 +143,11 @@ public class ScheduleMapper {
             checkData(schedule, rowIndex);
 
             Schedule lectureSchedule = new Schedule(schedule);
-            lectureSchedule.setTypeOfWeek(WeekType.NUMERATOR);   // числ
+            lectureSchedule.getScheduleDate().setTypeOfWeek(WeekType.NUMERATOR); // числ
             lectureSchedule.setLessonType(LessonType.LECTURE);
 
             Schedule practiceSchedule = new Schedule(schedule);
-            practiceSchedule.setTypeOfWeek(WeekType.DENOMINATOR); // знам
+            practiceSchedule.getScheduleDate().setTypeOfWeek(WeekType.DENOMINATOR); // знам
             practiceSchedule.setLessonType(lessonType.equals(LessonType.LECTURE_AND_PRACTICE) ? LessonType.PRACTICE :
                     LessonType.LABORATORY);
         }
@@ -157,7 +164,7 @@ public class ScheduleMapper {
      */
     private void checkData(Schedule schedule, Integer rowIndex) {
         LessonType lessonType = schedule.getLessonType();
-        if (!schedule.getTypeOfWeek().equals(WeekType.EVERY_WEEK)) {
+        if (!schedule.getScheduleDate().getTypeOfWeek().equals(WeekType.EVERY_WEEK)) {
             throw new InvalidDataException(
                     String.format(
                             "Некоректнi даннi у рядку %d. Для вказаного типу заняття (\"%s\") колонка \"числ\\знам\" має бути порожньою.",
