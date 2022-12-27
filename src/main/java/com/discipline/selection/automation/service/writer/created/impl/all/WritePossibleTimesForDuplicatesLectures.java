@@ -1,11 +1,11 @@
-package com.discipline.selection.automation.service.writer.created.impl;
+package com.discipline.selection.automation.service.writer.created.impl.all;
 
 import com.discipline.selection.automation.model.ConsolidationOfDisciplinesSchedule;
 import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleDate;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
-import com.discipline.selection.automation.service.writer.WriteScheduleForAllWorkDaysToExcel;
+import com.discipline.selection.automation.service.writer.created.WriteScheduleForAllWorkDaysToExcel;
 import com.discipline.selection.automation.util.CellStyleCreator;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -40,15 +40,17 @@ public class WritePossibleTimesForDuplicatesLectures extends WriteScheduleForAll
     private Map<String, Set<ScheduleDate>> freeTimeForDiscipline;
 
     public WritePossibleTimesForDuplicatesLectures(Set<ConsolidationOfDisciplinesSchedule> consolidationSchedules,
-                                                   Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule) {
-
+                                                   Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule,
+                                                   XSSFWorkbook workbook) {
+        super(workbook);
         this.consolidationSchedules = consolidationSchedules;
         this.duplicatedSchedule = duplicatedSchedule;
+        this.workbook = workbook;
     }
 
     @Override
-    public void writeToExcel(XSSFWorkbook workbook) {
-        initStyles(workbook);
+    public void writeToExcel(String fileName) {
+        System.out.println("\nЗапис можливого переносу дисциплін...");
         XSSFSheet sheet = workbook.createSheet(POSSIBLE_SCHEDULE_CHANGES_SHEET_NAME);
         XSSFCellStyle busyCellStyle = CellStyleCreator.createDuplicatedFarCellStyleCharacteristics(workbook);
 
@@ -56,6 +58,7 @@ public class WritePossibleTimesForDuplicatesLectures extends WriteScheduleForAll
 
         writeHeader(sheet);
         writeSchedule(sheet, busyCellStyle);
+        System.out.printf("Можливі переноси дисциплін було записано у новий вихiдний файл \"%s\" (Лист №7).%n", fileName);
     }
 
     /**

@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.List;
 import java.util.Map;
 
+import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINES_FOR_DIFF_FACULTIES_SHEET_INDEX;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINES_SHEET_INDEX;
 import static com.discipline.selection.automation.util.Constants.STUDENTS_COUNT_COLUMN_TITLE;
@@ -29,13 +30,34 @@ public class WriteStudentsCountToExistedExcelSheetImpl extends WriteDisciplinesT
     private Integer sheetIndex = DISCIPLINES_SHEET_INDEX;
 
     public WriteStudentsCountToExistedExcelSheetImpl(Map<String, List<Student>> students,
-                                                     Map<String, Discipline> disciplines) {
+                                                     Map<String, Discipline> disciplines, XSSFWorkbook workbook) {
+        super(workbook);
         this.students = students;
         this.disciplines = disciplines;
+        this.workbook = workbook;
     }
 
     @Override
-    public void writeToExcel(XSSFWorkbook workbook) {
+    public boolean isProcess() {
+        if (workbook.getSheetAt(sheetIndex) == null) {
+            return true;
+        }
+
+        XSSFRow row = workbook.getSheetAt(sheetIndex).getRow(0);
+        short lastCellNum = row.getLastCellNum();
+
+        if (row.getCell(lastCellNum) != null && row.getCell(lastCellNum).getRawValue().equals(STUDENTS_COUNT_COLUMN_TITLE)) {
+            System.out.println("К-ть дисциплiн, якi обрали студенти з рiзних факультетiв, вже існує у вхiдному файлі (Лист №3).%n");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void writeToExcel(String fileName) {
+        System.out.println("\nПiдрахунок та запис поточної кiлькостi студентiв...");
+        fileName = FILE_NAME;
+
         int indexOfLastColumn = disciplinesHeader.entrySet().stream()
                 .filter(entry -> entry.getValue().equals(STUDENTS_COUNT_COLUMN_TITLE))
                 .findFirst()
@@ -47,6 +69,9 @@ public class WriteStudentsCountToExistedExcelSheetImpl extends WriteDisciplinesT
         writeNewColumnStudentsCountToHeader(sheet, indexOfLastColumn);
         writeCurrentStudentsCountForAllDisciplines(sheet, indexOfLastColumn);
         sheet.autoSizeColumn(indexOfLastColumn);
+
+        System.out.printf("Поточна кiлькiсть студентiв була записана у iснуючий вхiдний файл \"%s\"(Лист №2).%n",
+                fileName);
     }
 
     public void setSheetIndex(Integer sheetIndex) {

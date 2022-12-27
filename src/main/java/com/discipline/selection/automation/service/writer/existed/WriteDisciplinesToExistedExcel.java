@@ -1,10 +1,9 @@
 package com.discipline.selection.automation.service.writer.existed;
 
 import com.discipline.selection.automation.model.Discipline;
-import com.discipline.selection.automation.model.Student;
-import com.discipline.selection.automation.service.WriteToExcel;
 import com.discipline.selection.automation.service.reader.ReadFromExcel;
 import com.discipline.selection.automation.service.reader.impl.ReadDisciplinesHeaderFromExcelImpl;
+import com.discipline.selection.automation.service.writer.WriteToExcel;
 import com.discipline.selection.automation.util.CellStyleCreator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -13,26 +12,30 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.util.List;
 import java.util.Map;
 
-import static com.discipline.selection.automation.util.Constants.STUDENTS_COUNT_COLUMN_TITLE;
+import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 
 /**
  * Class that contains a basic logic for writing data into existed Excel file
  *
  * @author Yuliia_Dolnikova
  */
-public abstract class WriteDisciplinesToExistedExcel implements WriteToExcel {
+public abstract class WriteDisciplinesToExistedExcel extends WriteToExcel {
 
     private final ReadFromExcel<Integer, String> readDisciplinesHeaderFromExcel =
             new ReadDisciplinesHeaderFromExcelImpl();
 
-    protected XSSFCellStyle evenCellStyle;
-    protected XSSFCellStyle oddCellStyle;
-    protected Map<String, List<Student>> students;
-    protected Map<String, Discipline> disciplines;
     protected Map<Integer, String> disciplinesHeader = readDisciplinesHeaderFromExcel.uploadData();
+
+    protected WriteDisciplinesToExistedExcel(XSSFWorkbook workbook) {
+        super(workbook);
+    }
+
+    @Override
+    public String getFileName() {
+        return FILE_NAME;
+    }
 
     /**
      * The void saves the current students count in the corresponding line of the worksheet.
@@ -98,18 +101,6 @@ public abstract class WriteDisciplinesToExistedExcel implements WriteToExcel {
         }
 
         return cellStyle;
-    }
-
-    /**
-     * @param rowIndex - index of current row for identification this rows like odd or even
-     * @return cell style.
-     */
-    protected XSSFCellStyle setForeground(int rowIndex) {
-        if (rowIndex % 2 == 0) {
-            return evenCellStyle;
-        } else {
-            return oddCellStyle;
-        }
     }
 
 }

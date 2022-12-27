@@ -1,4 +1,4 @@
-package com.discipline.selection.automation.service.writer.created.impl;
+package com.discipline.selection.automation.service.writer.created.impl.all;
 
 import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
@@ -6,7 +6,7 @@ import com.discipline.selection.automation.model.Student;
 import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
-import com.discipline.selection.automation.service.writer.WriteScheduleForAllWorkDaysToExcel;
+import com.discipline.selection.automation.service.writer.created.WriteScheduleForAllWorkDaysToExcel;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.discipline.selection.automation.util.Constants.SCHEDULE_DATES_HEADER;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_BY_GROUPS_SHEET_NAME;
+import static com.discipline.selection.automation.util.Constants.SCHEDULE_DATES_HEADER;
 
 /**
  * Class that creates the schedule of disciplines for students and
@@ -32,18 +32,22 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteScheduleForAllWork
     private final Set<String> studentsGroups = new LinkedHashSet<>();
 
     public WriteScheduleByGroupsToNewExcelImpl(Map<String, List<Student>> studentsGroupedByGroup,
-                                               Map<String, List<Schedule>> schedules) {
+                                               Map<String, List<Schedule>> schedules, XSSFWorkbook workbook) {
+        super(workbook);
         this.students = studentsGroupedByGroup;
         this.schedules = schedules;
         this.studentsGroups.addAll(getStudentsGroups());
+        this.workbook = workbook;
     }
 
     @Override
-    public void writeToExcel(XSSFWorkbook workbook) {
-        initStyles(workbook);
+    public void writeToExcel(String fileName) {
+        System.out.println("\nЗапис розкладу груп...");
         XSSFSheet scheduleSheet = workbook.createSheet(SCHEDULE_BY_GROUPS_SHEET_NAME);
         writeHeader(scheduleSheet);
         writeSchedule(scheduleSheet);
+
+        System.out.printf("Розклад груп було записано у новий вихiдний файл \"%s\" (Лист №1).%n", fileName);
     }
 
     /**

@@ -8,6 +8,7 @@ import com.discipline.selection.automation.model.Student;
 import com.discipline.selection.automation.model.enums.LessonType;
 import com.discipline.selection.automation.model.enums.WeekType;
 import com.discipline.selection.automation.service.writer.created.WriteDisciplinesToNewExcel;
+import com.discipline.selection.automation.service.writer.created.impl.all.WritePossibleTimesForDuplicatesLectures;
 import com.discipline.selection.automation.util.CellStyleCreator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -50,16 +51,19 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
     public WriteConsolidationOfDisciplinesScheduleToNewExcelImpl(Map<String, List<Student>> students,
                                                                  Map<String, Discipline> disciplines,
                                                                  Map<String, List<Schedule>> schedules,
-                                                                 Set<String> disciplinesWithoutSchedule) {
+                                                                 Set<String> disciplinesWithoutSchedule,
+                                                                 XSSFWorkbook workbook) {
+        super(workbook);
         this.students = students;
         this.disciplines = disciplines;
         this.schedules = schedules;
         this.disciplinesWithoutSchedule = disciplinesWithoutSchedule;
+        this.workbook = workbook;
     }
 
     @Override
-    public void writeToExcel(XSSFWorkbook workbook) {
-        initStyles(workbook);
+    public void writeToExcel(String fileName) {
+        System.out.println("\nЗапис консолідації дисциплін...");
 
         XSSFSheet scheduleSheet = workbook.createSheet(CONSOLIDATION_OF_DISCIPLINES_SCHEDULE_SHEET_NAME);
         XSSFSheet duplicatedScheduleSheet =
@@ -75,6 +79,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         writeSchedule(scheduleSheet, consolidationSchedules);
         writeDuplicatesCount(scheduleSheet, duplicatedSchedule.size());
         writeFarLessonsCount(scheduleSheet, farFacultiesSchedule.size());
+        System.out.printf("Розклад студентiв було записано у новий вихiдний файл \"%s\" (Лист №2).%n", fileName);
 
         // for good view in other Excel sheets
         duplicatedSchedule.forEach(consolidation -> consolidation.setDuplicate(false));
@@ -83,21 +88,21 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         // write duplicated schedule to separate sheet
         writeHeader(duplicatedScheduleSheet);
         writeSchedule(duplicatedScheduleSheet, duplicatedSchedule);
+        System.out.printf("Дублiкати розкладу студентiв було записано у новий вихiдний файл \"%s\" (Лист №3).%n", fileName);
 
         // write far schedule to separate sheet
         writeHeader(farScheduleSheet);
         writeSchedule(farScheduleSheet, farFacultiesSchedule);
-
+        System.out.printf("Проблеми з переїздом було записано у новий вихiдний файл \"%s\" (Лист №4).%n", fileName);
 
         if (!disciplinesWithoutSchedule.isEmpty()) {
             System.out.printf("\nВ файлi \"%s\" немає розкладу для дисциплiн [%s].\n%n", FILE_NAME,
                     String.join(COMA, disciplinesWithoutSchedule));
         }
         if (!duplicatedSchedule.isEmpty()) {
-            System.out.println("Запис можливих перестановок дисциплін");
             WriteDisciplinesToNewExcel writeDisciplinesToNewExcel = new WritePossibleTimesForDuplicatesLectures(
-                    consolidationSchedules, duplicatedSchedule);
-            writeDisciplinesToNewExcel.writeToExcel(workbook);
+                    consolidationSchedules, duplicatedSchedule, workbook);
+            writeDisciplinesToNewExcel.writeToExcel(fileName);
         }
     }
 
@@ -426,11 +431,11 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
      */
     private XSSFCellStyle setScheduleForeground(int rowIndex, boolean isDuplicate, boolean isFacultyFar) {
         if (isDuplicate && isFacultyFar) {
-            return duplicatedAndFarCellStyle;
+            return cellStyles.getDuplicatedAndFarCellStyle();
         } else if (isDuplicate) {
-            return duplicatedCellStyle;
+            return cellStyles.getDuplicatedCellStyle();
         } else if (isFacultyFar) {
-            return farCellStyle;
+            return cellStyles.getFarCellStyle();
         }
         return setForeground(rowIndex);
     }

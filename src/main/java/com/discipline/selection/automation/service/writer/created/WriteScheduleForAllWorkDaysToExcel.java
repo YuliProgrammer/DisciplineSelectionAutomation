@@ -1,12 +1,12 @@
-package com.discipline.selection.automation.service.writer;
+package com.discipline.selection.automation.service.writer.created;
 
 import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
-import com.discipline.selection.automation.service.writer.created.WriteDisciplinesToNewExcel;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,12 +17,22 @@ import java.util.stream.IntStream;
 import static com.discipline.selection.automation.model.enums.WeekDay.DAYS;
 import static com.discipline.selection.automation.model.enums.WeekType.EVERY_WEEK;
 import static com.discipline.selection.automation.model.enums.WeekType.WEEK_TYPES;
+import static com.discipline.selection.automation.util.Constants.OUTPUT_FILE_NAME_SCHEDULE;
 
 public abstract class WriteScheduleForAllWorkDaysToExcel extends WriteDisciplinesToNewExcel {
 
     protected List<String> values = new ArrayList<>();
     protected int columnIndex = 0;
     protected int rowIndex = 2;
+
+    protected WriteScheduleForAllWorkDaysToExcel(XSSFWorkbook workbook) {
+        super(workbook);
+    }
+
+    @Override
+    public String getFileName() {
+        return OUTPUT_FILE_NAME_SCHEDULE;
+    }
 
     /**
      * Void that write schedule to excel.
@@ -100,7 +110,7 @@ public abstract class WriteScheduleForAllWorkDaysToExcel extends WriteDiscipline
     }
 
     private void writeEmptyLine(XSSFSheet sheet) {
-        writeEmptyLine(sheet, emptyCellStyle, rowIndex, columnIndex);
+        writeEmptyLine(sheet, cellStyles.getEmptyCellStyle(), rowIndex, columnIndex);
     }
 
 }

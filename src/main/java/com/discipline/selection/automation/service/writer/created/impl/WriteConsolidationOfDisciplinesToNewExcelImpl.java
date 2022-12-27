@@ -28,20 +28,24 @@ public class WriteConsolidationOfDisciplinesToNewExcelImpl extends WriteDiscipli
 
     public WriteConsolidationOfDisciplinesToNewExcelImpl(Map<String, List<Student>> students,
                                                          Map<String, Discipline> disciplines,
-                                                         Map<String, List<Schedule>> schedules) {
+                                                         Map<String, List<Schedule>> schedules,
+                                                         XSSFWorkbook workbook) {
+        super(workbook);
         this.students = students;
         this.disciplines = disciplines;
         this.schedules = schedules;
         this.studentsGroups = getStudentsGroups();
+        this.workbook = workbook;
     }
 
     @Override
-    public void writeToExcel(XSSFWorkbook workbook) {
-        initStyles(workbook);
+    public void writeToExcel(String fileName) {
+        System.out.println("\nЗапис зведення дисциплiн...");
         XSSFSheet sheet = workbook.createSheet(CONSOLIDATION_OF_DISCIPLINES_SHEET_NAME);
 
         writeHeader(sheet);
         writeDiscipline(sheet);
+        System.out.printf("Зведення дисциплiн було записано у новий вихiдний файл \"%s\" (Лист №1).%n", fileName);
     }
 
     /**

@@ -8,9 +8,7 @@ import com.discipline.selection.automation.service.reader.ReadFromExcel;
 import com.discipline.selection.automation.service.reader.impl.ReadDisciplinesFromExcelImpl;
 import com.discipline.selection.automation.service.reader.impl.ReadScheduleFromExcelImpl;
 import com.discipline.selection.automation.service.reader.impl.ReadStudentsFromExcelImpl;
-import com.discipline.selection.automation.service.writer.common.Writer;
-import com.discipline.selection.automation.service.writer.common.impl.WriteConsolidationOfDisciplines;
-import com.discipline.selection.automation.service.writer.common.impl.WriteStudentsCount;
+import com.discipline.selection.automation.service.writer.WriterChainImpl;
 import com.discipline.selection.automation.util.Dialog;
 
 import java.util.ArrayList;
@@ -23,15 +21,15 @@ import static com.discipline.selection.automation.util.Constants.TEACHER;
 
 public class MainApplication {
 
-    private final static ReadFromExcel<String, Map<String, List<Student>>> readStudentsFromExcel =
+    private static final ReadFromExcel<String, Map<String, List<Student>>> readStudentsFromExcel =
             new ReadStudentsFromExcelImpl();
-    private final static ReadFromExcel<String, Discipline> readDisciplinesFromExcel =
+    private static final ReadFromExcel<String, Discipline> readDisciplinesFromExcel =
             new ReadDisciplinesFromExcelImpl();
-    private final static ReadFromExcel<String, Map<String, List<Schedule>>> readScheduleFromExcel =
+    private static final ReadFromExcel<String, Map<String, List<Schedule>>> readScheduleFromExcel =
             new ReadScheduleFromExcelImpl();
 
     public static String FILE_NAME;
-    public static List<String> SCHEDULE_FILE_NAMES = new ArrayList<>();
+    public static final List<String> SCHEDULE_FILE_NAMES = new ArrayList<>();
 
     public static void main(String... args) {
         try {
@@ -52,14 +50,9 @@ public class MainApplication {
 
         Map<String, Discipline> disciplines = readDisciplinesFromExcel.uploadData();
 
-        System.out.println("\nПiдрахунок та запис поточної кiлькостi студентiв...");
-        Writer writeStudentsCount = new WriteStudentsCount(studentsGroupedByDiscipline, disciplines);
-        writeStudentsCount.writeToExcel();
-
-        Writer writeConsolidationOfDisciplines = new WriteConsolidationOfDisciplines(studentsGroupedByGroup,
-                studentsGroupedByDiscipline, disciplines, schedulesGroupedByDisciplineCipher,
-                schedulesGroupedByTeacher);
-        writeConsolidationOfDisciplines.writeToExcel();
+        WriterChainImpl writerChain = new WriterChainImpl(studentsGroupedByGroup, studentsGroupedByDiscipline,
+                disciplines, schedulesGroupedByDisciplineCipher, schedulesGroupedByTeacher);
+        writerChain.write();
 
         System.out.println("\nКiнець роботи програми.");
     }

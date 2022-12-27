@@ -28,22 +28,37 @@ import static com.discipline.selection.automation.util.Constants.STUDENTS_COUNT_
 public class WriteDisciplinesForDifferentFacilitiesToExistedExcelImpl extends WriteDisciplinesToExistedExcel {
 
     public WriteDisciplinesForDifferentFacilitiesToExistedExcelImpl(Map<String, List<Student>> students,
-                                                                    Map<String, Discipline> disciplines) {
+                                                                    Map<String, Discipline> disciplines, XSSFWorkbook workbook) {
+        super(workbook);
         this.students = StudentMapper.getStudentsGroupedByDisciplineCipherForDifferentFacilities(students);
         this.disciplines = disciplines.entrySet().stream()
                 .filter(entry -> this.students.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        this.workbook = workbook;
     }
 
     @Override
-    public void writeToExcel(XSSFWorkbook workbook) {
-        evenCellStyle = CellStyleCreator.createEvenCellStyleCharacteristics(workbook);
-        oddCellStyle = CellStyleCreator.createOddCellStyleCharacteristics(workbook);
+    public boolean isProcess() {
+        if (workbook.getSheet(CHOSEN_DISCIPLINES_FOR_DIFFERENT_FACILITIES_SHEET_NAME) != null) {
+            System.out.println("Список дисциплiн, якi обрали студенти з рiзних факультетiв, вже існує у вхiдному файлі (Лист №3).%n");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void writeToExcel(String fileName) {
+        System.out.println("\nЗапис дисциплін, які обрали студенти різних факультетів...");
+
         XSSFSheet sheet = workbook.createSheet(CHOSEN_DISCIPLINES_FOR_DIFFERENT_FACILITIES_SHEET_NAME);
         int indexOfLastColumn = writeHeader(sheet);
         writeDisciplines(sheet, indexOfLastColumn);
 
         sheet.autoSizeColumn(indexOfLastColumn);
+
+        System.out.printf(
+                "Список дисциплiн, якi обрали студенти з рiзних факультетiв, було записано у iснуючий вхiдний файл \"%s\" (Лист №3).%n",
+                fileName);
     }
 
     /**

@@ -1,9 +1,7 @@
 package com.discipline.selection.automation.service.writer.created;
 
-import com.discipline.selection.automation.model.Discipline;
 import com.discipline.selection.automation.model.Schedule;
-import com.discipline.selection.automation.model.Student;
-import com.discipline.selection.automation.service.WriteToExcel;
+import com.discipline.selection.automation.service.writer.WriteToExcel;
 import com.discipline.selection.automation.util.CellStyleCreator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -16,47 +14,32 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.discipline.selection.automation.util.Constants.OUTPUT_FILE_NAME;
+
 /**
  * Class that contains a basic logic for writing data into new Excel file
  *
  * @author Yuliia_Dolnikova
  */
-public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
-
-    protected XSSFCellStyle emptyCellStyle;
-    protected XSSFCellStyle evenCellStyle;
-    protected XSSFCellStyle oddCellStyle;
-    protected XSSFCellStyle farCellStyle;
-    protected XSSFCellStyle duplicatedCellStyle;
-    protected XSSFCellStyle duplicatedAndFarCellStyle;
-
-    /**
-     * key - discipline cipher, value - list of students who's chosen this discipline
-     */
-    protected Map<String, List<Student>> students;
-
-    /**
-     * key - discipline cipher, value - discipline
-     */
-    protected Map<String, Discipline> disciplines;
+public abstract class WriteDisciplinesToNewExcel extends WriteToExcel {
 
     /**
      * key - discipline cipher, value - schedule for this discipline
      */
     protected Map<String, List<Schedule>> schedules;
 
-    /**
-     * Void initialize cell styles
-     *
-     * @param workbook - current workbook
-     */
-    protected void initStyles(XSSFWorkbook workbook) {
-        emptyCellStyle = CellStyleCreator.createDefaultCellStyleCharacteristics(workbook);
-        evenCellStyle = CellStyleCreator.createEvenCellStyleCharacteristics(workbook);
-        oddCellStyle = CellStyleCreator.createOddCellStyleCharacteristics(workbook);
-        farCellStyle = CellStyleCreator.createFarCellStyleCharacteristics(workbook);
-        duplicatedCellStyle = CellStyleCreator.createDuplicatedCellStyleCharacteristics(workbook);
-        duplicatedAndFarCellStyle = CellStyleCreator.createDuplicatedFarCellStyleCharacteristics(workbook);
+    protected WriteDisciplinesToNewExcel(XSSFWorkbook workbook) {
+        super(workbook);
+    }
+
+    @Override
+    public boolean isProcess() {
+        return true;
+    }
+
+    @Override
+    public String getFileName() {
+        return OUTPUT_FILE_NAME;
     }
 
     /**
@@ -102,18 +85,6 @@ public abstract class WriteDisciplinesToNewExcel implements WriteToExcel {
         }
 
         return columnIndex;
-    }
-
-    /**
-     * @param rowIndex - index of current row for identification this rows like odd or even.
-     * @return cell style.
-     */
-    protected XSSFCellStyle setForeground(int rowIndex) {
-        if (rowIndex % 2 == 0) {
-            return evenCellStyle;
-        } else {
-            return oddCellStyle;
-        }
     }
 
 }
