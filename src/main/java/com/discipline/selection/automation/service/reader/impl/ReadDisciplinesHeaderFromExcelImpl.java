@@ -1,11 +1,9 @@
 package com.discipline.selection.automation.service.reader.impl;
 
-import com.discipline.selection.automation.service.reader.ReadFromExcel;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -14,13 +12,16 @@ import java.util.Map;
 import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINES_SHEET_INDEX;
 
-public class ReadDisciplinesHeaderFromExcelImpl implements ReadFromExcel<Integer, String> {
+public class ReadDisciplinesHeaderFromExcelImpl extends BasicExcelReaderChain<Integer, String> {
 
     @Override
     public Map<Integer, String> uploadData() {
         try (FileInputStream file = new FileInputStream(FILE_NAME)) {
             Workbook workbook = new XSSFWorkbook(file);
-            return getDisciplinesHeader(workbook);
+
+            Map<Integer, String> disciplinesHeader = getDisciplinesHeader(workbook);
+            incomingDataDto.setDisciplineHeader(disciplinesHeader);
+            return disciplinesHeader;
         } catch (IOException e) {
             e.printStackTrace();
         }

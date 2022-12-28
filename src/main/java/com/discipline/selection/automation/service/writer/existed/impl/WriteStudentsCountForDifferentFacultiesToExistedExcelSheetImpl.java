@@ -19,8 +19,10 @@ import static com.discipline.selection.automation.util.Constants.CHOSEN_DISCIPLI
 public class WriteStudentsCountForDifferentFacultiesToExistedExcelSheetImpl extends WriteStudentsCountToExistedExcelSheetImpl {
 
     public WriteStudentsCountForDifferentFacultiesToExistedExcelSheetImpl(Map<String, List<Student>> students,
-                                                                          Map<String, Discipline> disciplines, XSSFWorkbook workbook) {
-        super(students, disciplines, workbook);
+                                                                          Map<String, Discipline> disciplines,
+                                                                          Map<Integer, String> disciplinesHeader,
+                                                                          XSSFWorkbook workbook) {
+        super(students, disciplines, disciplinesHeader, workbook);
     }
 
     @Override

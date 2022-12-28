@@ -3,7 +3,6 @@ package com.discipline.selection.automation.service.reader.impl;
 import com.discipline.selection.automation.mapper.ScheduleMapper;
 import com.discipline.selection.automation.model.GroupedSchedule;
 import com.discipline.selection.automation.model.Schedule;
-import com.discipline.selection.automation.service.reader.ReadFromExcel;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -22,7 +21,7 @@ import static com.discipline.selection.automation.util.Constants.DISCIPLINE;
 import static com.discipline.selection.automation.util.Constants.SCHEDULE_SHEET_INDEX;
 import static com.discipline.selection.automation.util.Constants.TEACHER;
 
-public class ReadScheduleFromExcelImpl implements ReadFromExcel<String, Map<String, List<Schedule>>> {
+public class ReadScheduleFromExcelImpl extends BasicExcelReaderChain<String, Map<String, List<Schedule>>> {
 
     private static String FILE_NAME;
 
@@ -52,6 +51,9 @@ public class ReadScheduleFromExcelImpl implements ReadFromExcel<String, Map<Stri
 
                 groupedSchedulesMap.put(DISCIPLINE, disciplineMap);
                 groupedSchedulesMap.put(TEACHER, teacherMap);
+
+                incomingDataDto.setSchedulesGroupedByDisciplineCipher(disciplineMap);
+                incomingDataDto.setSchedulesGroupedByTeacher(teacherMap);
             } catch (IOException e) {
                 e.printStackTrace();
             }

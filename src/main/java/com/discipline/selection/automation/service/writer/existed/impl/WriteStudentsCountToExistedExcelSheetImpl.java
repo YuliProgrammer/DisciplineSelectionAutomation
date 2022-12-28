@@ -30,8 +30,10 @@ public class WriteStudentsCountToExistedExcelSheetImpl extends WriteDisciplinesT
     private Integer sheetIndex = DISCIPLINES_SHEET_INDEX;
 
     public WriteStudentsCountToExistedExcelSheetImpl(Map<String, List<Student>> students,
-                                                     Map<String, Discipline> disciplines, XSSFWorkbook workbook) {
-        super(workbook);
+                                                     Map<String, Discipline> disciplines,
+                                                     Map<Integer, String> disciplinesHeader,
+                                                     XSSFWorkbook workbook) {
+        super(disciplinesHeader, workbook);
         this.students = students;
         this.disciplines = disciplines;
         this.workbook = workbook;
@@ -62,7 +64,7 @@ public class WriteStudentsCountToExistedExcelSheetImpl extends WriteDisciplinesT
                 .filter(entry -> entry.getValue().equals(STUDENTS_COUNT_COLUMN_TITLE))
                 .findFirst()
                 .map(Map.Entry::getKey)
-                .orElseGet(() -> disciplinesHeader.size());
+                .orElseGet(disciplinesHeader::size);
 
         XSSFSheet sheet = workbook.getSheetAt(sheetIndex);
 

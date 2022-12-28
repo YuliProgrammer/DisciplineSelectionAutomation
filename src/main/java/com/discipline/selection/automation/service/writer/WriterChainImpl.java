@@ -1,5 +1,6 @@
 package com.discipline.selection.automation.service.writer;
 
+import com.discipline.selection.automation.dto.IncomingDataDto;
 import com.discipline.selection.automation.mapper.StudentMapper;
 import com.discipline.selection.automation.model.Discipline;
 import com.discipline.selection.automation.model.Schedule;
@@ -31,23 +32,22 @@ public class WriterChainImpl {
     private final Map<String, List<Student>> studentsGroupedByDiscipline;
     private final Map<String, List<Student>> studentsGroupedByGroup;
     private final Map<String, Discipline> disciplines;
+    private final Map<Integer, String> disciplinesHeader;
     private final Map<String, List<Schedule>> schedule;
     private final Map<String, List<Schedule>> schedulesGroupedByTeacher;
     private final Set<String> disciplinesWithoutSchedule = new LinkedHashSet<>();
 
-    public WriterChainImpl(Map<String, List<Student>> studentsGroupedByGroup,
-                           Map<String, List<Student>> studentsGroupedByDiscipline,
-                           Map<String, Discipline> disciplines,
-                           Map<String, List<Schedule>> schedule,
-                           Map<String, List<Schedule>> schedulesGroupedByTeacher) {
-        this.studentsGroupedByGroup = studentsGroupedByGroup;
+    public WriterChainImpl(IncomingDataDto incomingDataDto) {
+        this.studentsGroupedByGroup = incomingDataDto.getStudentsGroupedByGroup();
         this.studentsGroupedByDiscipline =
-                StudentMapper.getStudentsGroupedByDisciplineCipherForDifferentFacilities(studentsGroupedByDiscipline);
-        this.disciplines = disciplines.entrySet().stream()
+                StudentMapper.getStudentsGroupedByDisciplineCipherForDifferentFacilities(incomingDataDto.getStudentsGroupedByDiscipline());
+        this.disciplinesHeader = incomingDataDto.getDisciplineHeader();
+        this.disciplines = incomingDataDto.getDisciplines().entrySet().stream()
                 .filter(entry -> this.studentsGroupedByDiscipline.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        this.schedule = schedule;
-        this.schedulesGroupedByTeacher = schedulesGroupedByTeacher;
+        this.schedule = incomingDataDto.getSchedulesGroupedByDisciplineCipher();
+        this.schedulesGroupedByTeacher = incomingDataDto.getSchedulesGroupedByTeacher();
+
         addMaxStudentCountForPracticeAndLaboratory(schedule, disciplines);
         calculateCurrentStudentsCountForAllDisciplines(disciplines);
     }
@@ -55,11 +55,11 @@ public class WriterChainImpl {
     public void write() {
 
         XSSFWorkbook existedWorkbook = getWorkbook();
-        WriterChain writeStudentsCount = new WriteStudentsCountToExistedExcelSheetImpl(studentsGroupedByDiscipline, disciplines, existedWorkbook);
+        WriterChain writeStudentsCount = new WriteStudentsCountToExistedExcelSheetImpl(studentsGroupedByDiscipline, disciplines, disciplinesHeader, existedWorkbook);
         WriterChain writeDisciplinesForDifferentFacilities =
-                new WriteDisciplinesForDifferentFacilitiesToExistedExcelImpl(studentsGroupedByDiscipline, disciplines, existedWorkbook);
+                new WriteDisciplinesForDifferentFacilitiesToExistedExcelImpl(studentsGroupedByDiscipline, disciplines, disciplinesHeader, existedWorkbook);
         WriterChain writeStudentsCountForDifferentFaculties =
-                new WriteStudentsCountForDifferentFacultiesToExistedExcelSheetImpl(studentsGroupedByDiscipline, disciplines, existedWorkbook);
+                new WriteStudentsCountForDifferentFacultiesToExistedExcelSheetImpl(studentsGroupedByDiscipline, disciplines, disciplinesHeader, existedWorkbook);
 
         XSSFWorkbook consolidationWorkbook = getNewWorkbook();
         WriterChain writeConsolidationOfDisciplines =

@@ -1,9 +1,9 @@
 package com.discipline.selection.automation.service.writer;
 
+import com.discipline.selection.automation.dto.CellStyles;
 import com.discipline.selection.automation.mapper.StringMapper;
 import com.discipline.selection.automation.model.Discipline;
 import com.discipline.selection.automation.model.Student;
-import com.discipline.selection.automation.service.dto.CellStyles;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -45,7 +45,7 @@ public abstract class WriteToExcel implements WriterChain {
 
     protected WriteToExcel(XSSFWorkbook workbook) {
         this.workbook = workbook;
-        this.cellStyles = CellStyles.getInstance(workbook);
+        this.cellStyles = new CellStyles(workbook);
     }
 
     @Override

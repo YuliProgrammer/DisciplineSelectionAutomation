@@ -1,5 +1,6 @@
 package com.discipline.selection.automation.service.reader;
 
+import com.discipline.selection.automation.dto.IncomingDataDto;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,6 +17,23 @@ import java.util.Objects;
  * @author Yuliia_Dolnikova
  */
 public interface ReadFromExcel<K, V> {
+
+    /**
+     * @param nextReader - next reader in the chain
+     */
+    void setNextReader(ReadFromExcel nextReader);
+
+    /**
+     * The method execute the chain of readers
+     */
+    void execute();
+
+    /**
+     * The method returns all incoming data from all input Excel files
+     *
+     * @return incoming data
+     */
+    IncomingDataDto getIncomingDataDto();
 
     Map<K, V> uploadData();
 

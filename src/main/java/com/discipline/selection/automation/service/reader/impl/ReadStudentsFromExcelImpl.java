@@ -3,13 +3,11 @@ package com.discipline.selection.automation.service.reader.impl;
 import com.discipline.selection.automation.mapper.StudentMapper;
 import com.discipline.selection.automation.model.GroupedStudents;
 import com.discipline.selection.automation.model.Student;
-import com.discipline.selection.automation.service.reader.ReadFromExcel;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +21,7 @@ import static com.discipline.selection.automation.util.Constants.DISCIPLINE;
 import static com.discipline.selection.automation.util.Constants.GROUP;
 import static com.discipline.selection.automation.util.Constants.STUDENTS_SHEET_INDEX;
 
-public class ReadStudentsFromExcelImpl implements ReadFromExcel<String, Map<String, List<Student>>> {
+public class ReadStudentsFromExcelImpl extends BasicExcelReaderChain<String, Map<String, List<Student>>> {
 
     @Override
     public Map<String, Map<String, List<Student>>> uploadData() {
@@ -34,6 +32,9 @@ public class ReadStudentsFromExcelImpl implements ReadFromExcel<String, Map<Stri
             Map<String, Map<String, List<Student>>> groupedStudentsMap = new HashMap<>();
             groupedStudentsMap.put(DISCIPLINE, groupedStudents.getStudentsGroupedByDisciplines());
             groupedStudentsMap.put(GROUP, groupedStudents.getStudentsGroupedByGroup());
+
+            incomingDataDto.setStudentsGroupedByDiscipline(groupedStudents.getStudentsGroupedByDisciplines());
+            incomingDataDto.setStudentsGroupedByGroup(groupedStudents.getStudentsGroupedByGroup());
 
             return groupedStudentsMap;
         } catch (IOException e) {

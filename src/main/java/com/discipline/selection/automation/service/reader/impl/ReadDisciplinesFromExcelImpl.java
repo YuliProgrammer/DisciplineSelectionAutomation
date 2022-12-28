@@ -1,29 +1,30 @@
 package com.discipline.selection.automation.service.reader.impl;
 
-import static com.discipline.selection.automation.MainApplication.FILE_NAME;
-import static com.discipline.selection.automation.util.Constants.DISCIPLINES_SHEET_INDEX;
+import com.discipline.selection.automation.mapper.DisciplineMapper;
+import com.discipline.selection.automation.model.Discipline;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.discipline.selection.automation.service.reader.ReadFromExcel;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import static com.discipline.selection.automation.MainApplication.FILE_NAME;
+import static com.discipline.selection.automation.util.Constants.DISCIPLINES_SHEET_INDEX;
 
-import com.discipline.selection.automation.mapper.DisciplineMapper;
-import com.discipline.selection.automation.model.Discipline;
-
-public class ReadDisciplinesFromExcelImpl implements ReadFromExcel<String, Discipline> {
+public class ReadDisciplinesFromExcelImpl extends BasicExcelReaderChain<String, Discipline> {
 
     @Override
     public Map<String, Discipline> uploadData() {
         try (FileInputStream file = new FileInputStream(FILE_NAME)) {
             Workbook workbook = new XSSFWorkbook(file);
-            return getDisciplines(workbook);
+
+            Map<String, Discipline> disciplines = getDisciplines(workbook);
+            incomingDataDto.setDisciplines(disciplines);
+            return disciplines;
         } catch (IOException e) {
             e.printStackTrace();
         }

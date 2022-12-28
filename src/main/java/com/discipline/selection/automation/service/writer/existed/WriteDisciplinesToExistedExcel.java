@@ -1,8 +1,6 @@
 package com.discipline.selection.automation.service.writer.existed;
 
 import com.discipline.selection.automation.model.Discipline;
-import com.discipline.selection.automation.service.reader.ReadFromExcel;
-import com.discipline.selection.automation.service.reader.impl.ReadDisciplinesHeaderFromExcelImpl;
 import com.discipline.selection.automation.service.writer.WriteToExcel;
 import com.discipline.selection.automation.util.CellStyleCreator;
 import org.apache.poi.ss.usermodel.Cell;
@@ -23,13 +21,11 @@ import static com.discipline.selection.automation.MainApplication.FILE_NAME;
  */
 public abstract class WriteDisciplinesToExistedExcel extends WriteToExcel {
 
-    private final ReadFromExcel<Integer, String> readDisciplinesHeaderFromExcel =
-            new ReadDisciplinesHeaderFromExcelImpl();
+    protected final Map<Integer, String> disciplinesHeader;
 
-    protected Map<Integer, String> disciplinesHeader = readDisciplinesHeaderFromExcel.uploadData();
-
-    protected WriteDisciplinesToExistedExcel(XSSFWorkbook workbook) {
+    protected WriteDisciplinesToExistedExcel(Map<Integer, String> disciplinesHeader, XSSFWorkbook workbook) {
         super(workbook);
+        this.disciplinesHeader = disciplinesHeader;
     }
 
     @Override

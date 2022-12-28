@@ -27,9 +27,12 @@ import static com.discipline.selection.automation.util.Constants.STUDENTS_COUNT_
  */
 public class WriteDisciplinesForDifferentFacilitiesToExistedExcelImpl extends WriteDisciplinesToExistedExcel {
 
+
     public WriteDisciplinesForDifferentFacilitiesToExistedExcelImpl(Map<String, List<Student>> students,
-                                                                    Map<String, Discipline> disciplines, XSSFWorkbook workbook) {
-        super(workbook);
+                                                                    Map<String, Discipline> disciplines,
+                                                                    Map<Integer, String> disciplinesHeader,
+                                                                    XSSFWorkbook workbook) {
+        super(disciplinesHeader, workbook);
         this.students = StudentMapper.getStudentsGroupedByDisciplineCipherForDifferentFacilities(students);
         this.disciplines = disciplines.entrySet().stream()
                 .filter(entry -> this.students.containsKey(entry.getKey()))
