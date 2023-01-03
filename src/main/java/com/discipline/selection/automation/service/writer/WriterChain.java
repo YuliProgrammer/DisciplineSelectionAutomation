@@ -19,7 +19,7 @@ public interface WriterChain {
     void execute();
 
     /**
-     * the method checks whether the writer should write smth in the workbook or not
+     * The method checks whether the writer should write smth in the workbook or not
      *
      * @return true, when we writeToExcel method should be called
      */
