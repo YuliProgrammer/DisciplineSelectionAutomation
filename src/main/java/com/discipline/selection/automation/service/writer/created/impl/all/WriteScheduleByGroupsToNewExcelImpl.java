@@ -1,8 +1,8 @@
 package com.discipline.selection.automation.service.writer.created.impl.all;
 
-import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
-import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.entity.Schedule;
+import com.discipline.selection.automation.model.entity.Student;
 import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -74,9 +75,9 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteScheduleForAllWork
         List<String> groupDisciplines = new ArrayList<>();
         for (String group : studentsGroups) {
             Set<ScheduleByGroupsOrTeachers> scheduleByGroups = new HashSet<>();
-            students.get(group).forEach(student -> {
+            students.get(group).forEach(student -> student.getDisciplines().stream().filter(Objects::nonNull).forEach(discipline -> {
                 List<Schedule> scheduleByDisciplineForCurrentStudent =
-                        schedules.get(student.getDiscipline().getDisciplineCipher());
+                        schedules.get(discipline.getDisciplineCipher());
                 if (scheduleByDisciplineForCurrentStudent != null) {
                     List<ScheduleByGroupsOrTeachers> schedules = mapScheduleToScheduleByGroupsOrTeachers(
                             filterSchedule(scheduleByDisciplineForCurrentStudent, day, lessonNumber, weekType));
@@ -86,7 +87,7 @@ public class WriteScheduleByGroupsToNewExcelImpl extends WriteScheduleForAllWork
 
                     scheduleByGroups.addAll(schedules);
                 }
-            });
+            }));
 
             Set<String> disciplineValues = getDisciplinesForAllGroupAndOneLesson(scheduleByGroups);
             groupDisciplines.add(String.join("", disciplineValues));

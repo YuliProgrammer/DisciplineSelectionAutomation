@@ -1,7 +1,9 @@
 package com.discipline.selection.automation.service.writer.created.impl.all;
 
-import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
+import com.discipline.selection.automation.model.entity.Schedule;
+import com.discipline.selection.automation.model.entity.Teacher;
+import com.discipline.selection.automation.model.entity.TeacherSchedule;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
 import com.discipline.selection.automation.service.writer.created.WriteScheduleForAllWorkDaysToExcel;
@@ -10,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -157,7 +160,11 @@ public class WriteScheduleByTeachersToNewExcelImpl extends WriteScheduleForAllWo
      * @param teacherName              - name of current teacher
      */
     private void getTeachersDuplicates(List<Schedule> scheduleByCurrentTeacher, String teacherName) {
-        scheduleByCurrentTeacher.forEach(scheduleByTeacher -> scheduleByTeacher.setTeacherName(teacherName));
+        scheduleByCurrentTeacher.forEach(scheduleByTeacher -> scheduleByTeacher
+                .setTeacherSchedules(Collections.singleton(TeacherSchedule.builder()
+                        .teacher(new Teacher(teacherName))
+                        .schedule(scheduleByTeacher)
+                        .build())));
         Set<Schedule> scheduleByTeacher = this.teachersDuplicates.containsKey(teacherName) ?
                 new HashSet<>(this.teachersDuplicates.get(teacherName)) : new HashSet<>();
         scheduleByTeacher.addAll(scheduleByCurrentTeacher);

@@ -1,8 +1,13 @@
 package com.discipline.selection.automation.mapper;
 
 import com.discipline.selection.automation.exceptions.InvalidDataException;
-import com.discipline.selection.automation.model.Schedule;
-import com.discipline.selection.automation.model.ScheduleDate;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.model.entity.Group;
+import com.discipline.selection.automation.model.entity.GroupSchedule;
+import com.discipline.selection.automation.model.entity.Schedule;
+import com.discipline.selection.automation.model.entity.ScheduleDate;
+import com.discipline.selection.automation.model.entity.Teacher;
+import com.discipline.selection.automation.model.entity.TeacherSchedule;
 import com.discipline.selection.automation.model.enums.FacultyType;
 import com.discipline.selection.automation.model.enums.LessonType;
 import com.discipline.selection.automation.model.enums.WeekDay;
@@ -12,6 +17,7 @@ import lombok.experimental.UtilityClass;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,27 +64,36 @@ public class ScheduleMapper {
         List<String> lessonNumbers = new ArrayList<>();
 
         for (Map.Entry<Integer, String> entry : rowData.entrySet()) {
-            String value = entry.getValue().trim();
+            String value = Objects.isNull(entry.getValue()) ? "" : entry.getValue().trim();
             schedule.setFileName(fileName);
 
             switch (entry.getKey()) {
                 case 0:
-                    schedule.setDisciplineCipher(replaceEngByUa(value));
+                    schedule.setDiscipline(Discipline.builder().disciplineCipher(replaceEngByUa(value)).build());
                     break;
                 case 1:
-                    schedule.setGroupCodes(Stream.of(value.split(COMA))
-                            .map(String::trim)
-                            .map(String::toUpperCase)
-                            .collect(Collectors.toList()));
+                    schedule.setGroupSchedule(Stream.of(value.split(COMA))
+                            .map(String::trim).map(String::toUpperCase)
+                            .map(groupCode -> GroupSchedule.builder()
+                                    .schedule(schedule)
+                                    .group(Group.builder().groupCode(groupCode).build())
+                                    .build())
+                            .collect(Collectors.toSet()));
                     break;
                 case 2:
                     schedule.setMaxNumberOfStudentsInSubGroup(StringMapper.parseStringToInt(value));
                     break;
                 case 3:
-                    schedule.setSubgroupNumber(value);
+                    schedule.setSubgroupNumber(StringMapper.parseStringToInt(value));
                     break;
                 case 4:
-                    schedule.setTeacherName(value);
+                    schedule.setTeacherSchedules(Stream.of(value.split(COMA))
+                            .map(String::trim)
+                            .map(teacherName -> TeacherSchedule.builder()
+                                    .schedule(schedule)
+                                    .teacher(Teacher.builder().name(teacherName).build())
+                                    .build())
+                            .collect(Collectors.toSet()));
                     break;
                 case 5:
                     scheduleDate.setTypeOfWeek(WeekType.of(value));
@@ -99,7 +114,7 @@ public class ScheduleMapper {
                     schedule.setLessonType(LessonType.of(value, rowIndex, fileName));
                     break;
                 case 9:
-                    schedule.setGroupNumber(value);
+                    schedule.setGroupNumber(StringMapper.parseStringToInt(value));
                     break;
                 case 10:
                     schedule.setFacultyType(FacultyType.of(StringMapper.parseStringToInt(value), rowIndex, fileName));

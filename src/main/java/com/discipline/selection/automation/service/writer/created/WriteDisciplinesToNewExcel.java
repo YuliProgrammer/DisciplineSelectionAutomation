@@ -1,6 +1,6 @@
 package com.discipline.selection.automation.service.writer.created;
 
-import com.discipline.selection.automation.model.Schedule;
+import com.discipline.selection.automation.model.entity.Schedule;
 import com.discipline.selection.automation.service.writer.WriteToExcel;
 import com.discipline.selection.automation.util.CellStyleCreator;
 import org.apache.poi.ss.usermodel.Cell;
@@ -11,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public abstract class WriteDisciplinesToNewExcel extends WriteToExcel {
     /**
      * key - discipline cipher, value - schedule for this discipline
      */
-    protected Map<String, List<Schedule>> schedules;
+    protected Map<String, List<Schedule>> schedules = new HashMap<>();
 
     protected WriteDisciplinesToNewExcel(XSSFWorkbook workbook) {
         super(workbook);

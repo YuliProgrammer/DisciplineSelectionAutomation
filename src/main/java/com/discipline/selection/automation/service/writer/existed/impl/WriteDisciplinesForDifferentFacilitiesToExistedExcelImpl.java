@@ -1,8 +1,8 @@
 package com.discipline.selection.automation.service.writer.existed.impl;
 
 import com.discipline.selection.automation.mapper.StudentMapper;
-import com.discipline.selection.automation.model.Discipline;
-import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.model.entity.Student;
 import com.discipline.selection.automation.service.writer.existed.WriteDisciplinesToExistedExcel;
 import com.discipline.selection.automation.util.CellStyleCreator;
 import org.apache.poi.ss.usermodel.Cell;

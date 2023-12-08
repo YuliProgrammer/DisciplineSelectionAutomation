@@ -2,9 +2,9 @@ package com.discipline.selection.automation.service.writer;
 
 import com.discipline.selection.automation.dto.IncomingDataDto;
 import com.discipline.selection.automation.mapper.StudentMapper;
-import com.discipline.selection.automation.model.Discipline;
-import com.discipline.selection.automation.model.Schedule;
-import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.model.entity.Schedule;
+import com.discipline.selection.automation.model.entity.Student;
 import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesScheduleToNewExcelImpl;
 import com.discipline.selection.automation.service.writer.created.impl.WriteConsolidationOfDisciplinesToNewExcelImpl;
 import com.discipline.selection.automation.service.writer.created.impl.all.WriteScheduleByGroupsToNewExcelImpl;

@@ -37,13 +37,4 @@ public class ScheduleByGroupsOrTeachers {
     private String fileName;
     private List<String> groupCodes = new ArrayList<>();
 
-    public List<String> getValuesForScheduleByGroups() {
-        List<String> valuesForScheduleByGroups = new ArrayList<>();
-        valuesForScheduleByGroups.add(dayOfWeek.getName());
-        valuesForScheduleByGroups.add(lessonNumber.toString());
-        valuesForScheduleByGroups.add(typeOfWeek.getName());
-        valuesForScheduleByGroups.add(oneDisciplineCipher);
-        return valuesForScheduleByGroups;
-    }
-
 }

@@ -1,8 +1,10 @@
 package com.discipline.selection.automation.service.writer.created.impl.all;
 
 import com.discipline.selection.automation.model.ConsolidationOfDisciplinesSchedule;
-import com.discipline.selection.automation.model.Schedule;
-import com.discipline.selection.automation.model.ScheduleDate;
+import com.discipline.selection.automation.model.entity.Schedule;
+import com.discipline.selection.automation.model.entity.ScheduleDate;
+import com.discipline.selection.automation.model.entity.Teacher;
+import com.discipline.selection.automation.model.entity.TeacherSchedule;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
 import com.discipline.selection.automation.service.writer.created.WriteScheduleForAllWorkDaysToExcel;
@@ -101,15 +103,18 @@ public class WritePossibleTimesForDuplicatesLectures extends WriteScheduleForAll
      * the value - is the set of possible free dates for all students,
      * who's chosen this discipline and for all teachers who teachers this discipline
      */
-    private Map<String, Set<ScheduleDate>> findFreeTimeForAllDuplicatedDiscipline(Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule) {
+    private Map<String, Set<ScheduleDate>> findFreeTimeForAllDuplicatedDiscipline(
+            Set<ConsolidationOfDisciplinesSchedule> duplicatedSchedule) {
 
-        Map<String, List<ConsolidationOfDisciplinesSchedule>> duplicatesConsolidationByCipher = duplicatedSchedule.stream()
-                .collect(Collectors.groupingBy(ConsolidationOfDisciplinesSchedule::getDisciplineCipher));
+        Map<String, List<ConsolidationOfDisciplinesSchedule>> duplicatesConsolidationByCipher =
+                duplicatedSchedule.stream()
+                        .collect(Collectors.groupingBy(ConsolidationOfDisciplinesSchedule::getDisciplineCipher));
         Set<String> duplicateDisciplineCiphers = duplicatesConsolidationByCipher.keySet().stream().sorted()
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        Map<String, Set<String>> studentsNamesWithDuplicatesByCipher = getFullScheduleForAllStudentsAndDuplicatedDiscipline(
-                consolidationSchedules, duplicateDisciplineCiphers);
+        Map<String, Set<String>> studentsNamesWithDuplicatesByCipher =
+                getFullScheduleForAllStudentsAndDuplicatedDiscipline(
+                        consolidationSchedules, duplicateDisciplineCiphers);
 
         // at the beginning of searching - the free dates for each discipline  - it's all possible free dates
         Set<ScheduleDate> scheduleDates = generateAllPossibleDates();
@@ -158,20 +163,20 @@ public class WritePossibleTimesForDuplicatesLectures extends WriteScheduleForAll
      * @param cipher - current discipline cipher
      * @return the whole teacher's schedule of those teachers who teaches the current discipline
      */
-    private List<ConsolidationOfDisciplinesSchedule> getTeacherFullConsolidationForTheCurrentDisciplineCipher(String cipher) {
-        List<ConsolidationOfDisciplinesSchedule> consolidationForCurrentCipher = consolidationSchedules.stream()
+    private List<ConsolidationOfDisciplinesSchedule> getTeacherFullConsolidationForTheCurrentDisciplineCipher(
+            String cipher) {
+        Set<String> teacherNames = consolidationSchedules.stream()
                 .filter(consolidation -> consolidation.getDisciplineCipher().equals(cipher))
-                .collect(Collectors.toList());
-
-        // find the teachers names, who teaches this discipline
-        Set<String> teacherNames = consolidationForCurrentCipher.stream()
-                .map(consolidation -> consolidation.getSchedule().getTeacherName())
+                .flatMap(consolidation -> consolidation.getSchedule().getTeacherSchedules().stream())
+                .map(TeacherSchedule::getTeacher)
+                .map(Teacher::getName)
                 .collect(Collectors.toSet());
 
         // find all schedule for these teachers (one teacher can teach more than 1 discipline)
         return teacherNames.stream()
                 .flatMap(teacherName -> consolidationSchedules.stream()
-                        .filter(c -> c.getSchedule().getTeacherName().equals(teacherName)))
+                        .filter(c -> c.getSchedule().getTeacherSchedules().stream()
+                                .map(ts -> ts.getTeacher().getName()).collect(Collectors.toSet()).contains(teacherName)))
                 .collect(Collectors.toList());
     }
 
@@ -198,7 +203,8 @@ public class WritePossibleTimesForDuplicatesLectures extends WriteScheduleForAll
      * @param personConsolidation - the full schedule for the current person
      * @return dates when the person is busy
      */
-    private Set<ScheduleDate> getPersonBusyScheduleDates(Collection<ConsolidationOfDisciplinesSchedule> personConsolidation) {
+    private Set<ScheduleDate> getPersonBusyScheduleDates(
+            Collection<ConsolidationOfDisciplinesSchedule> personConsolidation) {
         return personConsolidation.stream()
                 .map(ConsolidationOfDisciplinesSchedule::getSchedule)
                 .map(Schedule::getScheduleDate)

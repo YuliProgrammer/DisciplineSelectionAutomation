@@ -1,11 +1,14 @@
 package com.discipline.selection.automation.service.reader.impl;
 
 import com.discipline.selection.automation.mapper.DisciplineMapper;
-import com.discipline.selection.automation.model.Discipline;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.service.dao.DisciplineService;
+import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,16 +18,24 @@ import java.util.Map;
 import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINES_SHEET_INDEX;
 
+@Service
+@AllArgsConstructor
 public class ReadDisciplinesFromExcelImpl extends BasicExcelReaderChain<String, Discipline> {
+
+    private final DisciplineService disciplineService;
 
     @Override
     public Map<String, Discipline> uploadData() {
         try (FileInputStream file = new FileInputStream(FILE_NAME)) {
             Workbook workbook = new XSSFWorkbook(file);
 
-            Map<String, Discipline> disciplines = getDisciplines(workbook);
-            incomingDataDto.setDisciplines(disciplines);
-            return disciplines;
+            Map<String, Discipline> disciplinesByCiphers = getDisciplines(workbook);
+            System.out.println("\nДисципліни було успішно зчитано з файлу");
+
+            disciplineService.saveDisciplines(disciplinesByCiphers);
+            System.out.println("Дисципліни було успішно збережено в базі даних");
+            incomingDataDto.setDisciplines(disciplinesByCiphers);
+            return disciplinesByCiphers;
         } catch (IOException e) {
             e.printStackTrace();
         }

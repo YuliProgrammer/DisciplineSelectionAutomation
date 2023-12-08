@@ -1,6 +1,6 @@
 package com.discipline.selection.automation.mapper;
 
-import com.discipline.selection.automation.model.Discipline;
+import com.discipline.selection.automation.model.entity.Discipline;
 import lombok.experimental.UtilityClass;
 
 import java.util.Map;
@@ -40,25 +40,19 @@ public class DisciplineMapper {
                     discipline.setCathedraCipher(value);
                     break;
                 case 4:
-                    discipline.setLecturesHoursPerWeek(value);
+                    discipline.setLecturesHoursPerWeek(convertStringToNumber(value, 0));
                     break;
                 case 5:
-                    discipline.setPracticalHoursPerWeek(value);
+                    discipline.setPracticalHoursPerWeek(convertStringToNumber(value, 0));
                     break;
                 case 6:
-                    discipline.setLaboratoryHoursPerWeek(value);
+                    discipline.setLaboratoryHoursPerWeek(convertStringToNumber(value, 0));
                     break;
                 case 7:
-                    Integer studentsFlowCount = StringMapper.parseStringToInt(value);
-                    discipline.setNumberOfStudentsInFlow(
-                            (studentsFlowCount == null || studentsFlowCount <= 0) ? NUMBER_OF_STUDENTS_IN_FLOW :
-                                    studentsFlowCount);
+                    discipline.setNumberOfStudentsInFlow(convertStringToNumber(value, NUMBER_OF_STUDENTS_IN_FLOW));
                     break;
                 case 8:
-                    Integer studentsGroupCount = StringMapper.parseStringToInt(value);
-                    discipline.setNumberOfStudentsInGroup(
-                            (studentsGroupCount == null || studentsGroupCount <= 0) ? NUMBER_OF_STUDENTS_IN_GROUP :
-                                    studentsGroupCount);
+                    discipline.setNumberOfStudentsInGroup(convertStringToNumber(value, NUMBER_OF_STUDENTS_IN_GROUP));
                     break;
                 case 9:
                     discipline.setNumberOfStudentsInSubGroup(StringMapper.parseStringToInt(value));
@@ -70,6 +64,12 @@ public class DisciplineMapper {
         }
 
         return discipline;
+    }
+
+
+    private Integer convertStringToNumber(String value, Integer defaultValue) {
+        Integer parsedValue = StringMapper.parseStringToInt(value);
+        return (parsedValue == null || parsedValue <= 0) ? defaultValue : parsedValue;
     }
 
 }

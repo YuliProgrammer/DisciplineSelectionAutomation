@@ -1,8 +1,11 @@
 package com.discipline.selection.automation.mapper;
 
-import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.model.entity.Group;
+import com.discipline.selection.automation.model.entity.Student;
 import lombok.experimental.UtilityClass;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +26,7 @@ public class StudentMapper {
      */
     public Student mapRowDataToStudent(Map<Integer, String> rowData) {
         Student student = new Student();
+        Discipline discipline = new Discipline();
 
         for (Map.Entry<Integer, String> entry : rowData.entrySet()) {
             String value = entry.getValue().trim();
@@ -40,18 +44,19 @@ public class StudentMapper {
                     student.setCourse(value);
                     break;
                 case 4:
-                    student.setGroup(value.toUpperCase());
+                    student.setGroup(Group.builder().groupCode(value.toUpperCase()).build());
                     break;
                 case 5:
                     student.setDisciplinesNumber(value);
                     break;
                 case 6:
-                    student.getDiscipline().setDisciplineCipher(replaceEngByUa(value));
+                    discipline.setDisciplineCipher(replaceEngByUa(value));
                     break;
                 case 7:
-                    student.getDiscipline().setDisciplineName(value);
+                    discipline.setDisciplineName(value);
                     break;
             }
+            student.setDisciplines(Collections.singleton(discipline));
         }
 
         return student;

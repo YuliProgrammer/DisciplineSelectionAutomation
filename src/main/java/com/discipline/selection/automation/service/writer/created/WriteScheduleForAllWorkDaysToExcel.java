@@ -1,7 +1,7 @@
 package com.discipline.selection.automation.service.writer.created;
 
-import com.discipline.selection.automation.model.Schedule;
 import com.discipline.selection.automation.model.ScheduleByGroupsOrTeachers;
+import com.discipline.selection.automation.model.entity.Schedule;
 import com.discipline.selection.automation.model.enums.WeekDay;
 import com.discipline.selection.automation.model.enums.WeekType;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -91,7 +91,7 @@ public abstract class WriteScheduleForAllWorkDaysToExcel extends WriteDiscipline
      */
     private ScheduleByGroupsOrTeachers generateScheduleByGroupsOrTeachers(Schedule schedule) {
         return ScheduleByGroupsOrTeachers.builder()
-                .oneDisciplineCipher(schedule.getDisciplineCipher())
+                .oneDisciplineCipher(schedule.getDiscipline().getDisciplineCipher())
                 .facultyType(schedule.getFacultyType())
                 .facultyAddress(schedule.getFacultyAddress())
                 .dayOfWeek(schedule.getScheduleDate().getDayOfWeek())
@@ -99,7 +99,9 @@ public abstract class WriteScheduleForAllWorkDaysToExcel extends WriteDiscipline
                 .lessonType(schedule.getLessonType())
                 .typeOfWeek(schedule.getScheduleDate().getTypeOfWeek())
                 .fileName(schedule.getFileName())
-                .groupCodes(schedule.getGroupCodes())
+                .groupCodes(schedule.getGroupSchedule().stream()
+                        .map(groupSchedule -> groupSchedule.getGroup().getGroupCode())
+                        .collect(Collectors.toList()))
                 .build();
     }
 

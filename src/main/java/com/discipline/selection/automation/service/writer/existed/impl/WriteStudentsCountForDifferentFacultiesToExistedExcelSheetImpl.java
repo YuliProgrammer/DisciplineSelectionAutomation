@@ -1,7 +1,7 @@
 package com.discipline.selection.automation.service.writer.existed.impl;
 
-import com.discipline.selection.automation.model.Discipline;
-import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.model.entity.Student;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.List;
