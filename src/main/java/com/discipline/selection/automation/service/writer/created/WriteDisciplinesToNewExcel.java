@@ -1,6 +1,6 @@
 package com.discipline.selection.automation.service.writer.created;
 
-import com.discipline.selection.automation.model.Schedule;
+import com.discipline.selection.automation.model.entity.Schedule;
 import com.discipline.selection.automation.service.writer.WriteToExcel;
 import com.discipline.selection.automation.util.CellStyleCreator;
 import org.apache.poi.ss.usermodel.Cell;

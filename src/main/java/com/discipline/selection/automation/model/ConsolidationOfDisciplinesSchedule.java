@@ -1,5 +1,6 @@
 package com.discipline.selection.automation.model;
 
+import com.discipline.selection.automation.model.entity.Schedule;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

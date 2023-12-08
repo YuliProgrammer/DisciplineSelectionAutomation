@@ -1,10 +1,9 @@
 package com.discipline.selection.automation.service.writer.created.impl;
 
-import com.discipline.selection.automation.mapper.StringMapper;
 import com.discipline.selection.automation.model.ConsolidationOfDisciplinesSchedule;
-import com.discipline.selection.automation.model.Discipline;
-import com.discipline.selection.automation.model.Schedule;
-import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.model.entity.Schedule;
+import com.discipline.selection.automation.model.entity.Student;
 import com.discipline.selection.automation.model.enums.LessonType;
 import com.discipline.selection.automation.model.enums.WeekType;
 import com.discipline.selection.automation.service.writer.created.WriteDisciplinesToNewExcel;
@@ -188,7 +187,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
      *
      * @param student          - student for making schedule
      * @param disciplineCipher - cipher of current discipline
-     * @return list of ConsolidationOfDisciplinesSchedule for this student and discipline
+     * @return set of ConsolidationOfDisciplinesSchedule for this student and discipline
      */
     private Set<ConsolidationOfDisciplinesSchedule> createConsolidationOfDisciplinesSchedule(Student student,
                                                                                              String disciplineCipher) {
@@ -244,8 +243,8 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
      * @return group code
      */
     private String getStudentGroup(Student student) {
-        int indexOfLastHyphen = student.getGroup().lastIndexOf("-");
-        return student.getGroup().substring(0, indexOfLastHyphen);
+        int indexOfLastHyphen = student.getGroup().getGroupCode().lastIndexOf("-");
+        return student.getGroup().getGroupCode().substring(0, indexOfLastHyphen);
     }
 
     /**
@@ -261,13 +260,13 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
 
         // lecture lessons never have any duplicates
         List<Schedule> scheduleWithoutDuplicates = scheduleForCurrentDisciplineCipher.stream()
-                .filter(schedule -> schedule.getGroupCodes().contains(studentGroupCode))
+                .filter(schedule -> isGroupCodeContains(studentGroupCode, schedule))
                 .filter(schedule -> schedule.getLessonType().equals(LECTURE))
                 .collect(Collectors.toList());
 
         // find all practices schedule that contain free places for student
         List<Schedule> practices = scheduleForCurrentDisciplineCipher.stream()
-                .filter(schedule -> schedule.getGroupCodes().contains(studentGroupCode))
+                .filter(schedule -> isGroupCodeContains(studentGroupCode, schedule))
                 .filter(schedule -> !schedule.getLessonType().equals(LECTURE))
                 .filter(schedule -> schedule.getNumberOfStudentsInSubGroup() <
                         schedule.getMaxNumberOfStudentsInSubGroup())
@@ -290,6 +289,12 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
         return scheduleWithoutDuplicates;
     }
 
+    private static boolean isGroupCodeContains(String studentGroupCode, Schedule schedule) {
+        return schedule.getGroupSchedule().stream()
+                .map(groupSchedule -> groupSchedule.getGroup().getGroupCode()).collect(Collectors.toSet())
+                .contains(studentGroupCode);
+    }
+
     /**
      * Void return max lessons number for practice or laboratory per week.
      *
@@ -299,13 +304,12 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
      * (1 lesson = 2 hours, so to get lessons from hours we should divide hours by 2)
      */
     private Integer getMaxLessonsNumberPerWeek(Discipline discipline, LessonType lessonType) {
-        String maxHoursPerLesson = lessonType.equals(LABORATORY) ? discipline.getLaboratoryHoursPerWeek() :
+        Integer maxHoursPerLesson = lessonType.equals(LABORATORY) ? discipline.getLaboratoryHoursPerWeek() :
                 discipline.getPracticalHoursPerWeek();
-        Integer maxHours = StringMapper.parseStringToInt(maxHoursPerLesson);
-        if (maxHours != null) {
-            maxHours = maxHours <= 2 ? 1 : maxHours / 2;
+        if (maxHoursPerLesson != null) {
+            maxHoursPerLesson = maxHoursPerLesson <= 2 ? 1 : maxHoursPerLesson / 2;
         }
-        return maxHours;
+        return maxHoursPerLesson;
     }
 
     /**
@@ -321,9 +325,11 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
                 new ConsolidationOfDisciplinesSchedule();
         consolidationOfDisciplinesSchedule.setFacilityFirstLetter(student.getFacilityCipher().substring(0, 1));
         consolidationOfDisciplinesSchedule.setDisciplineCipher(disciplineCipher);
-        consolidationOfDisciplinesSchedule.setDisciplineName(student.getDiscipline().getDisciplineName());
+        consolidationOfDisciplinesSchedule.setDisciplineName(student.getDisciplines().stream()
+                .filter(discipline -> discipline.getDisciplineCipher().equals(disciplineCipher))
+                .map(Discipline::getDisciplineName).findFirst().orElse(""));
         consolidationOfDisciplinesSchedule.setStudentName(student.getName());
-        consolidationOfDisciplinesSchedule.setGroup(student.getGroup());
+        consolidationOfDisciplinesSchedule.setGroup(student.getGroup().getGroupCode());
 
         return consolidationOfDisciplinesSchedule;
     }
@@ -347,7 +353,7 @@ public class WriteConsolidationOfDisciplinesScheduleToNewExcelImpl extends Write
                     .stream()
                     .filter(consolidation -> consolidation.getSchedule().getScheduleDate().getLessonNumber()
                             .equals(currentSchedule.getScheduleDate().getLessonNumber()))
-                    .filter(consolidation -> !consolidation.getSchedule().getDisciplineCipher()
+                    .filter(consolidation -> !consolidation.getSchedule().getDiscipline().getDisciplineCipher()
                             .equals(disciplinesSchedule.getDisciplineCipher()))
                     .forEach(consolidation -> {
                         consolidation.setDuplicate(true);

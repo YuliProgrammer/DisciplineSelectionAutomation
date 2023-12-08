@@ -1,6 +1,6 @@
 package com.discipline.selection.automation.service.writer.existed;
 
-import com.discipline.selection.automation.model.Discipline;
+import com.discipline.selection.automation.model.entity.Discipline;
 import com.discipline.selection.automation.service.writer.WriteToExcel;
 import com.discipline.selection.automation.util.CellStyleCreator;
 import org.apache.poi.ss.usermodel.Cell;

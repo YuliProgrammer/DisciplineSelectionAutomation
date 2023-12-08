@@ -2,8 +2,8 @@ package com.discipline.selection.automation.service.writer;
 
 import com.discipline.selection.automation.dto.CellStyles;
 import com.discipline.selection.automation.mapper.StringMapper;
-import com.discipline.selection.automation.model.Discipline;
-import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.model.entity.Student;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;

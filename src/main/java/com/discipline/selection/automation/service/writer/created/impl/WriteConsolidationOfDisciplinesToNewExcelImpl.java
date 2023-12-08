@@ -1,8 +1,8 @@
 package com.discipline.selection.automation.service.writer.created.impl;
 
-import com.discipline.selection.automation.model.Discipline;
-import com.discipline.selection.automation.model.Schedule;
-import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.model.entity.Schedule;
+import com.discipline.selection.automation.model.entity.Student;
 import com.discipline.selection.automation.service.writer.created.WriteDisciplinesToNewExcel;
 import com.discipline.selection.automation.util.Constants;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -88,8 +88,8 @@ public class WriteConsolidationOfDisciplinesToNewExcelImpl extends WriteDiscipli
     private Set<String> getStudentsGroups() {
         Set<String> studentsGroups = new LinkedHashSet<>();
         students.forEach((key, value) -> value.forEach(student ->
-                studentsGroups
-                        .add(student.getGroup().length() < 2 ? student.getGroup() : student.getGroup().substring(0, 2))
+                studentsGroups.add(student.getGroup().getGroupCode().length() < 2 ? student.getGroup().getGroupCode()
+                        : student.getGroup().getGroupCode().substring(0, 2))
         ));
         return studentsGroups;
     }
@@ -100,9 +100,8 @@ public class WriteConsolidationOfDisciplinesToNewExcelImpl extends WriteDiscipli
      */
     private List<Long> getStudentsCountByGroups(List<Student> studentsByDiscipline) {
         return studentsGroups.stream()
-                .map(group -> studentsByDiscipline
-                        .stream()
-                        .filter(student -> student.getGroup().startsWith(group))
+                .map(group -> studentsByDiscipline.stream()
+                        .filter(student -> student.getGroup().getGroupCode().startsWith(group))
                         .count())
                 .collect(Collectors.toList());
     }

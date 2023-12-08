@@ -1,8 +1,8 @@
 package com.discipline.selection.automation.dto;
 
-import com.discipline.selection.automation.model.Discipline;
-import com.discipline.selection.automation.model.Schedule;
-import com.discipline.selection.automation.model.Student;
+import com.discipline.selection.automation.model.entity.Discipline;
+import com.discipline.selection.automation.model.entity.Schedule;
+import com.discipline.selection.automation.model.entity.Student;
 import lombok.Data;
 
 import java.util.List;

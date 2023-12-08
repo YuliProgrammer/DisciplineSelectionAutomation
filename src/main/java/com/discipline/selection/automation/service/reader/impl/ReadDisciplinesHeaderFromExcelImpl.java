@@ -3,6 +3,7 @@ package com.discipline.selection.automation.service.reader.impl;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.Map;
 import static com.discipline.selection.automation.MainApplication.FILE_NAME;
 import static com.discipline.selection.automation.util.Constants.DISCIPLINES_SHEET_INDEX;
 
+@Service
 public class ReadDisciplinesHeaderFromExcelImpl extends BasicExcelReaderChain<Integer, String> {
 
     @Override
